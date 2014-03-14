@@ -1,0 +1,13 @@
+<html>
+<h1>New Prescription</h1><hr>
+<p>Please enter new prescription information below.</p><br>
+<body>
+<form action="." method="post">{% csrf_token %}
+
+{{ form.as_p }}
+
+<input type="submit" value="Submit">
+</form>
+
+<br><br><hr><p>New prescription page.</p>
+</body></html>
