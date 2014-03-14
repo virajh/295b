@@ -1,6 +1,15 @@
 <html>
 <h1> {{ message }} </h1>
+
+{% for drug in list %}
+<li>
+<a href="{{drug.rxaui}}">{{ drug }}</a>
+</li>
+<br>
+{% endfor %}
 {% csrf_token %}
 <br><br><hr><p>Done page.</p>
 </body>
 </html>
+{% load url from future %}
+url 'select' drug.rxaui

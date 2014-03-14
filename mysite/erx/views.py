@@ -3,7 +3,7 @@ from django.views import generic
 from django.http import HttpResponse
 from django.template import RequestContext
 
-from erx.models import Patient, NewPatientForm, Prescription, NewPrescriptionForm
+from erx.models import Patient, NewPatientForm, Prescription, NewPrescriptionForm, Rxnconso
 
 #erx Create your views here.
 
@@ -23,7 +23,6 @@ def newpatient(request):
     else:
 
        if request.method == "GET":
-           print "GET"
            return render_to_response('erx/new_patient.html', {'form': NewPatientForm}, context_instance=RequestContext(request))
 
 
@@ -43,3 +42,15 @@ def newprescription(request):
     else:
         if request.method == "GET":
             return render_to_response('erx/new_prescription.html', {'form': NewPrescriptionForm}, context_instance=RequestContext(request))
+
+
+def search(request, name):
+
+    medi1 = Rxnconso.objects.filter(
+        str__contains=name)
+
+    return render_to_response('erx/done.html', {'message': 'Drugs found:', 'list': medi1}, context_instance=RequestContext(request))
+
+def select(request, rxaui):
+
+    return render_to_response('erx/done.html', {'message': rxaui}, context_instance=RequestContext(request))
