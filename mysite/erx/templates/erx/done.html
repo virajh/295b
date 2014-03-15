@@ -1,9 +1,10 @@
 <html>
 <h1> {{ message }} </h1>
 
+{% load url from future %}
 {% for drug in list %}
 <li>
-<a href="{{drug.rxaui}}">{{ drug }}</a>
+<a href="{% url 'erx:select' drug.rxaui %}">{{ drug }}</a>
 </li>
 <br>
 {% endfor %}
@@ -11,5 +12,4 @@
 <br><br><hr><p>Done page.</p>
 </body>
 </html>
-{% load url from future %}
-url 'select' drug.rxaui
+

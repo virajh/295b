@@ -34,7 +34,7 @@ class NewPatientForm(ModelForm):
 form_choices = (('Oral','ORAL'), ('Injection','INJECTION'),
     ('Drops', 'DROPS'), ('Ointment', 'OINTMENT'),
     ('Tablet', 'TABLET'), ('Capsule', 'CAPSULE'),
-    ('Inhalation', 'INHALATION'),
+    ('Inhalation', 'INHALATION'), ('Anhydrous', 'ANHYDROUS'),
 )
 
 
@@ -67,7 +67,8 @@ class Rxnconso(models.Model):
     def __unicode__(self):
         return self.str
 
-
+    def getDrug(self):
+        return self.str
 
 
 class Prescription(models.Model):
