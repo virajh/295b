@@ -70,6 +70,14 @@ DATABASES = {
         'HOST': 'localhost',
         'PORT': '22381'
     },
+    'mongo': {
+        'ENGINE': 'django_mongodb_engine',
+        'NAME': 'erx_db',
+        'USER': 'root',
+        'PASSWORD': '',
+        'HOST': 'localhost',
+        'PORT': 27017
+    },
 }
 
 

@@ -1,45 +1,99 @@
 from django.db import models
 from django.forms import ModelForm
+from django.core.validators import RegexValidator
 
 # Create your models here.
 
+#
+#Patient information table
+#
 gender_choices = (
     ('Male', 'MALE'),
     ('Female', 'FEMALE'),
 )
 
 class Patient(models.Model):
-    first_name = models.CharField(max_length=200)
-    middle_name = models.CharField(max_length=1)
-    last_name = models.CharField(max_length=200)
-    gender = models.CharField(max_length=20, choices=gender_choices)
-    birth_date = models.DateField('Date of Birth')
-    address_line_1 = models.CharField(max_length=200)
-    address_line_2 = models.CharField(max_length=200, blank=True)
-    city = models.CharField(max_length=200)
-    state = models.CharField(max_length=200)
-    zipcode = models.CharField(max_length=200)
-    telephone = models.CharField(max_length=200)    
+    first_name = models.CharField(verbose_name='First Name', max_length=200)
+    middle_name = models.CharField(verbose_name='Middle Name', max_length=200, blank=True)
+    last_name = models.CharField(verbose_name='Last Name', max_length=200)
+
+    medical_id = models.CharField(verbose_name='Medical ID', primary_key=True, max_length=11,
+        validators=[RegexValidator(regex='^\d{3}-\d{2}-\d{4}$',
+            message='Format has to be 123-45-6789',
+            code='Invalid Medical ID')],
+        default='xxx-xx-xxxx')
+
+    birth_date = models.DateField(verbose_name='Date of Birth ', default='mm/dd/yyyy')
+    gender = models.CharField(verbose_name='Gender', max_length=20, choices=gender_choices)
+    weight = models.CharField(verbose_name='Weight (in lbs)', max_length=20)
+    height = models.CharField(verbose_name='Height (in cm)', max_length=20) 
+    date_added = models.DateTimeField(auto_now_add = True)
+
+    def __unicode__(self):
+        if len(self.middle_name) >= 1:
+            return self.first_name+" "+self.middle_name+" "+self.last_name+" "+self.medical_id
+        else:
+            return self.first_name+" "+self.last_name+" "+self.medical_id
+
+class PatientForm(ModelForm):
+    class Meta:
+       model = Patient
+#
+#End of Patient
+#
+
+#
+#Contact information is separate object
+#
+class Contact(models.Model):
+    
+    medical_id = models.CharField(verbose_name='Medical ID', primary_key=True, max_length=11,
+        validators=[RegexValidator(regex='^\d{3}-\d{2}-\d{4}$',
+            message='Format has to be 123-45-6789',
+            code='Invalid Medical ID')],
+        default='xxx-xx-xxxx')
+
+    street_address = models.CharField(verbose_name='Street Address', max_length=200)
+    house_number = models.CharField(verbose_name='House/Apt. No', max_length=10, blank=True)
+    city = models.CharField(max_length=50)
+    state = models.CharField(max_length = 200)
+    zipcode = models.CharField(max_length=5, validators=[RegexValidator(regex='^\d{5}$',
+        message='Zipcode should be 5 digits', code='Invalid Zipcode')])
+
+    telephone = models.CharField(max_length=12, validators=[RegexValidator(regex='^\d{3}-\d{3}-\d{4}$',
+        message='Telephone number should be 10 digits xxx-xxx-xxxx', code='Invalid Telephone')])
+    
     email = models.EmailField(max_length=200)
 
     def __unicode__(self):
-        return self.first_name+" "+self.middle_name+" "+self.last_name
+        return self.medical_id+" "+self.street_address+" "+self.house_number
+
+
+class ContactForm(ModelForm):
+    class Meta:
+        model = Contact
+#
+#End of Contact
+#
+
+#
+#NewPatient inherits Patient and Contact class
+#
+class NewPatient(Patient, Contact):
+
+    def __unicode__(self):
+        super()
 
 class NewPatientForm(ModelForm):
     class Meta:
-        model = Patient
-        fields = '__all__'
+        model = NewPatient
+#
+#End of NewPatient
+#
 
-
-form_choices = (('Oral','ORAL'), ('Injection','INJECTION'),
-    ('Drops', 'DROPS'), ('Ointment', 'OINTMENT'),
-    ('Tablet', 'TABLET'), ('Capsule', 'CAPSULE'),
-    ('Inhalation', 'INHALATION'), ('Anhydrous', 'ANHYDROUS'),
-)
-
-
-
-
+#
+#RxNorm drug database
+#
 class Rxnconso(models.Model):
     rxcui = models.CharField(db_column='RXCUI', max_length=8) # Field name made lowercase.
     lat = models.CharField(db_column='LAT', max_length=3) # Field name made lowercase.
@@ -61,7 +115,6 @@ class Rxnconso(models.Model):
     cvf = models.CharField(db_column='CVF', max_length=50, blank=True) # Field name made lowercase.
 
     class Meta:
-#        managed = False
         db_table = 'RXNCONSO'
 
     def __unicode__(self):
@@ -69,14 +122,3 @@ class Rxnconso(models.Model):
 
     def getDrug(self):
         return self.str
-
-
-class Prescription(models.Model):
-    patient = models.ForeignKey(Patient)
-#    medicines = models.ManyToManyField(Rxnconso)
-    date = models.DateTimeField(auto_now_add=True)
-
-class NewPrescriptionForm(ModelForm):
-    class Meta:
-        model = Prescription
-        fields = '__all__'

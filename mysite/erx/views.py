@@ -3,7 +3,7 @@ from django.views import generic
 from django.http import HttpResponse
 from django.template import RequestContext
 
-from erx.models import Patient, NewPatientForm, Prescription, NewPrescriptionForm, Rxnconso
+from erx.models import NewPatient, NewPatientForm, Contact, ContactForm, Patient, PatientForm#, Prescription, NewPrescriptionForm, Rxnconso
 
 #Create your views here.
 
@@ -18,8 +18,10 @@ def createPatient(request):
        form = NewPatientForm(request.POST)
 
        if form.is_valid():
-           instance = form.save(commit=False)
-           instance.save()
+           patient = PatientForm(request.POST)
+           contact = ContactForm(request.POST)
+           patient.save()
+           contact.save()
            return render_to_response('erx/done.html', {'message': "Patient Saved."}, context_instance=RequestContext(request))
        else:
            return render_to_response('erx/done.html', {'message': form.errors}, context_instance=RequestContext(request))
