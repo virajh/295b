@@ -1,0 +1,19 @@
+<html>
+{% load url from future %}
+<h1> {{ message }} </h1>
+
+<body>
+<form action="." method="post">
+
+{{ form.as_p }}
+
+<input type="submit" value="Update" name="update">
+<input type="submit" value="Delete" name="delete">
+{% csrf_token %}
+</form>
+
+
+<br><br><hr><p>Form page.</p>
+</body>
+</html>
+
