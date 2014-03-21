@@ -38,7 +38,7 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'polls',
+    'djangotoolbox',
     'erx',
 )
 
@@ -60,7 +60,7 @@ WSGI_APPLICATION = 'mysite.wsgi.application'
 # https://docs.djangoproject.com/en/1.6/ref/settings/#databases
 
 DATABASES = {
-    'foodb': {
+    'sqlite': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': os.path.join(BASE_DIR, 'viraj.db.sqlite3'),
     },
@@ -74,7 +74,7 @@ DATABASES = {
     },
     'default': {
         'ENGINE': 'django_mongodb_engine',
-        'NAME': 'erx_db',
+        'NAME': 'erx',
         'USER': 'root',
         'PASSWORD': '',
         'HOST': 'localhost',

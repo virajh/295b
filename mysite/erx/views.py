@@ -1,10 +1,12 @@
+import sys, copy
+
 from django.shortcuts import render_to_response, get_object_or_404
 from django.views import generic
 from django.http import HttpResponse
 from django.template import RequestContext
 
-from erx.models import NewPatientForm, ContactForm, PatientForm, NewPharmacyForm, PharmacyForm
-from erx.models import Patient, Contact, Pharmacy, Rxnconso
+from erx.models import NewPatientForm, ContactForm, PatientForm, NewPharmacyForm, PharmacyForm, PrescriptionForm
+from erx.models import Patient, Contact, Pharmacy, NewPatient, Rxnconso
 
 #Create your views here.
 
@@ -31,7 +33,6 @@ def createPatient(request):
            return render_to_response('erx/new_patient.html', {'form': NewPatientForm}, context_instance=RequestContext(request))
 
 
-
 #Get all patients
 def getAllPatients(request):
 
@@ -46,6 +47,33 @@ def getAllPatients(request):
         return render_to_response('erx/done.html', {'message': 'Not allowed.'},
             context_instance=RequestContext(request))
 
+#Handle patient URL
+def handlePatient(request, patient):
+    print request.POST
+    
+    if request.method == 'GET':
+        patient1 = get_object_or_404(Patient, uid=patient)
+        form = PatientForm(instance=patient1)
+        return render_to_response('erx/form.html', {'message': 'Patient found',
+                                                    'form': form},
+            context_instance=RequestContext(request))
+
+    if request.method == 'POST':
+        try:
+            patient = get_object_or_404(Patient, uid=patient)
+            form = PatientForm(request.POST, instance=patient)
+            if form.is_valid():
+                form.save()
+                return render_to_response('erx/done.html', {'message': 'Patient %s saved.' % (patient)},
+                    context_instance=RequestContext(request))
+            else:
+                return render_to_response('erx/done.html', {'message': 'Patient %s not saved.\nErrors: %s ' % (patient, form.errors)},
+                    context_instance=RequestContext(request))
+        except Exception as e:
+            print 'error::', e
+            return render_to_response('erx/done.html', {'message': e},
+                    context_instance=RequestContext(request))
+
 #Read patient information
 def getPatient(request, pk):
     pass
@@ -55,9 +83,19 @@ def updatePatient(request):
     pass
 
 #Delete patient information
-def deletePatient(request):
-    pass
+def deletePatient(request, patient):
 
+    if request.method == 'POST':
+        try:
+            Patient.objects.filter(uid=patient).delete()
+            return render_to_response('erx/done.html', {'message': 'Patient %s deleted.' % (patient)},
+                    context_instance=RequestContext(request))
+        except:
+            return render_to_response('erx/done.html', {'message': 'Patient %s deletion failed.' % (patient)},
+                    context_instance=RequestContext(request))
+    else:
+        return render_to_response('erx/done.html', {'message': 'Not allowed.' % (patient)},
+                    context_instance=RequestContext(request))
 #
 #End of Patient methods
 #
@@ -70,18 +108,17 @@ def deletePatient(request):
 def newprescription(request):
 
     if request.method == "POST":
-        form = NewPrescriptionForm(request.POST)
+        form = PrescriptionForm(request.POST)
 
         if form.is_valid():
-            instance = form.save(commit=False)
-            instance.save()
+            form.save
             return render_to_response('erx/done.html', {'message': "Prescription Saved."}, context_instance=RequestContext(request))
 
         else:
             return render_to_response('erx/done.html', {'message': form.errors}, context_instance=RequestContext(request))
     else:
         if request.method == "GET":
-            return render_to_response('erx/new_prescription.html', {'form': NewPrescriptionForm}, context_instance=RequestContext(request))
+            return render_to_response('erx/new_prescription.html', {'form': PrescriptionForm}, context_instance=RequestContext(request))
 
 #Get prescription
 def getPrescription(request):
@@ -126,7 +163,7 @@ def newpharmacy(request):
             return render_to_response('erx/done.html', {'message': form.errors}, context_instance=RequestContext(request))
     else:
        if request.method == "GET":
-           return render_to_response('erx/new_prescription.html', {'form': NewPharmacyForm}, context_instance=RequestContext(request))
+           return render_to_response('erx/new_pharmacy.html', {'form': NewPharmacyForm}, context_instance=RequestContext(request))
 
 
 #

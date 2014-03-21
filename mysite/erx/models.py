@@ -1,6 +1,7 @@
 from django.db import models
 from django.forms import ModelForm
 from django.core.validators import RegexValidator
+from djangotoolbox.fields import ListField, EmbeddedModelField
 
 # Create your models here.
 
@@ -17,7 +18,7 @@ class Patient(models.Model):
     middle_name = models.CharField(verbose_name='Middle Name', max_length=200, blank=True)
     last_name = models.CharField(verbose_name='Last Name', max_length=200)
 
-    medical_id = models.CharField(verbose_name='Medical ID', primary_key=True, max_length=11,
+    uid = models.CharField(verbose_name='Medical ID', primary_key=True, max_length=11,
         validators=[RegexValidator(regex='^\d{3}-\d{2}-\d{4}$',
             message='Format has to be 123-45-6789',
             code='Invalid Medical ID')],
@@ -31,9 +32,9 @@ class Patient(models.Model):
 
     def __unicode__(self):
         if len(self.middle_name) >= 1:
-            return self.first_name+" "+self.middle_name+" "+self.last_name+" "+self.medical_id
+            return self.first_name+" "+self.middle_name+" "+self.last_name+" "+self.uid
         else:
-            return self.first_name+" "+self.last_name+" "+self.medical_id
+            return self.first_name+" "+self.last_name+" "+self.uid
 
 class PatientForm(ModelForm):
     class Meta:
@@ -47,7 +48,7 @@ class PatientForm(ModelForm):
 #
 class Contact(models.Model):
     
-    medical_id = models.CharField(verbose_name='Medical ID', primary_key=True, max_length=11,
+    uid = models.CharField(verbose_name='Medical ID', primary_key=True, max_length=11,
         validators=[RegexValidator(regex='^\d{3}-\d{2}-\d{4}$',
             message='Format has to be 123-45-6789',
             code='Invalid Medical ID')],
@@ -60,13 +61,13 @@ class Contact(models.Model):
     zipcode = models.CharField(max_length=5, validators=[RegexValidator(regex='^\d{5}$',
         message='Zipcode should be 5 digits', code='Invalid Zipcode')])
 
-    telephone = models.CharField(max_length=12, validators=[RegexValidator(regex='^\d{3}-\d{3}-\d{4}$',
+    telephone = models.CharField(max_length=12, unique=True, validators=[RegexValidator(regex='^\d{3}-\d{3}-\d{4}$',
         message='Telephone number should be 10 digits xxx-xxx-xxxx', code='Invalid Telephone')])
     
-    email = models.EmailField(max_length=200)
+    email = models.EmailField(max_length=200, unique=True)
 
     def __unicode__(self):
-        return self.medical_id+" "+self.street_address+" "+self.house_number
+        return self.uid+" "+self.street_address+" "+self.house_number
 
 
 class ContactForm(ModelForm):
@@ -99,14 +100,14 @@ class Pharmacy(models.Model):
 
     pharmacy_name = models.CharField(verbose_name='Pharmacy Name', max_length=200)
 
-    medical_id = models.CharField(verbose_name='Pharmacy ID', primary_key=True, max_length=11,
+    uid = models.CharField(verbose_name='Pharmacy ID', primary_key=True, max_length=11,
         validators=[RegexValidator(regex='^\d{3}-\d{2}-\d{4}$',
             message='Format has to be 123-45-6789',
             code='Invalid Pharmacy ID')],
         default='xxx-xx-xxxx')
 
     def __unicode__(self):
-        return self.pharmacy_name
+        return self.pharmacy_name + " " + self.uid
 
 class PharmacyForm(ModelForm):
     class Meta:
@@ -129,6 +130,61 @@ class NewPharmacyForm(ModelForm):
 #
 #End of NewPharmacy
 #
+
+#
+#Medicine Object to be embedded in Prescription
+#
+sub_choices = (
+    ('YES', 'Yes'),
+    ('NO', 'No'),
+)
+
+class Medicine(models.Model):
+    name = models.CharField('Name', max_length=3000)
+    form = models.CharField('Form', max_length=200)
+    frequency = models.CharField('Frequency', max_length=1000)
+    quantity = models.CharField('Dispense Quantity', max_length=20)
+    instruction = models.CharField('Instructions', max_length=3000)
+    substitution = models.CharField('Substitution allowed', max_length=20, choices=sub_choices)
+#
+#End of Medicine
+#
+
+#
+#Prescription Object
+#
+st_choices = (
+    ('PENDING', 'Pending'),
+    ('SUBMITTED', 'Submitted'),
+)
+
+refill_choices = (
+    (0,0),
+    (1,1),
+    (2,2),
+    (3,3),
+    (4,4),
+)
+
+class Prescription(models.Model):
+
+    p_id = models.AutoField('Prescription ID', primary_key=True)
+    date_created = models.DateTimeField(auto_now_add=True)
+    last_modified = models.DateTimeField(auto_now=True)
+    status = models.CharField('Status', max_length=20, choices=st_choices)
+    patient = models.OneToOneField(Patient)
+    pharmacy = models.OneToOneField(Pharmacy)
+    refills = models.IntegerField('Number of Refills', max_length=5, choices=refill_choices, default=0)
+    drugs = EmbeddedModelField('Medicine')
+
+class PrescriptionForm(ModelForm):
+    class Meta:
+        model = Prescription
+#
+#End of prescription object
+#
+
+
 
 #
 #RxNorm drug database
