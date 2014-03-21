@@ -91,6 +91,45 @@ class NewPatientForm(ModelForm):
 #End of NewPatient
 #
 
+
+#
+#Pharmacy Object
+#
+class Pharmacy(models.Model):
+
+    pharmacy_name = models.CharField(verbose_name='Pharmacy Name', max_length=200)
+
+    medical_id = models.CharField(verbose_name='Pharmacy ID', primary_key=True, max_length=11,
+        validators=[RegexValidator(regex='^\d{3}-\d{2}-\d{4}$',
+            message='Format has to be 123-45-6789',
+            code='Invalid Pharmacy ID')],
+        default='xxx-xx-xxxx')
+
+    def __unicode__(self):
+        return self.pharmacy_name
+
+class PharmacyForm(ModelForm):
+    class Meta:
+        model = Pharmacy
+#
+#End of Pharmacy
+#
+
+#
+#NewPharmacy Object
+#
+class NewPharmacy(Pharmacy, Contact):
+
+    def __unicode__(self):
+        super()
+
+class NewPharmacyForm(ModelForm):
+    class Meta:
+        model = NewPharmacy
+#
+#End of NewPharmacy
+#
+
 #
 #RxNorm drug database
 #
@@ -122,3 +161,6 @@ class Rxnconso(models.Model):
 
     def getDrug(self):
         return self.str
+#
+#End of Rxconso
+#

@@ -3,7 +3,8 @@ from django.views import generic
 from django.http import HttpResponse
 from django.template import RequestContext
 
-from erx.models import NewPatient, NewPatientForm, Contact, ContactForm, Patient, PatientForm#, Prescription, NewPrescriptionForm, Rxnconso
+from erx.models import NewPatientForm, ContactForm, PatientForm, NewPharmacyForm, PharmacyForm
+from erx.models import Patient, Contact, Pharmacy, Rxnconso
 
 #Create your views here.
 
@@ -13,7 +14,7 @@ from erx.models import NewPatient, NewPatientForm, Contact, ContactForm, Patient
 
 #Create new patient
 def createPatient(request):
-   
+
     if request.method == "POST":
        form = NewPatientForm(request.POST)
 
@@ -29,12 +30,24 @@ def createPatient(request):
        if request.method == "GET":
            return render_to_response('erx/new_patient.html', {'form': NewPatientForm}, context_instance=RequestContext(request))
 
-#Read patient information
-def getPatient(request, pk):
-    pass
+
 
 #Get all patients
-def getAllPatient(request):
+def getAllPatients(request):
+
+    if request.method == 'GET':
+        patients = Patient.objects.all()
+        plist = []
+        for patient in patients:
+            list.append(str(patient))
+        return render_to_response('erx/done.html', {'message': 'All patients:', 'patients': plist},
+            context_instance=RequestContext(request))
+    else:
+        return render_to_response('erx/done.html', {'message': 'Not allowed.'},
+            context_instance=RequestContext(request))
+
+#Read patient information
+def getPatient(request, pk):
     pass
 
 #Update patient information
@@ -45,9 +58,6 @@ def updatePatient(request):
 def deletePatient(request):
     pass
 
-#Search for patient in the database
-def searchPatient(request):
-    pass
 #
 #End of Patient methods
 #
@@ -98,6 +108,32 @@ def searchPrescription(request):
 #
 
 #
+#Pharmacy CRUD & Search Methods
+#
+
+def newpharmacy(request):
+
+    if request.method == 'POST':
+        form = NewPharmacyForm(request.POST)
+
+        if form.is_valid():
+            pharmacy = PharmacyForm(request.POST)
+            contact = ContactForm(request.POST)
+            pharmacy.save()
+            contact.save()
+            return render_to_response('erx/done.html', {'message': "Pharmacy Saved."}, context_instance=RequestContext(request))
+        else:
+            return render_to_response('erx/done.html', {'message': form.errors}, context_instance=RequestContext(request))
+    else:
+       if request.method == "GET":
+           return render_to_response('erx/new_prescription.html', {'form': NewPharmacyForm}, context_instance=RequestContext(request))
+
+
+#
+#End of Pharmacy methods
+#
+
+#
 #Read & Search methods for Drugs in RxNorm
 #
 
@@ -105,8 +141,10 @@ def searchPrescription(request):
 def search(request, name):
 
     result = Rxnconso.objects.filter(str__contains=name)
-    return render_to_response('erx/done.html', {'message': 'Drugs found:', 'list': result}, context_instance=RequestContext(request))
-
+    if len(result) > 0:
+        return render_to_response('erx/done.html', {'message': 'Drugs found:', 'list': result}, context_instance=RequestContext(request))
+    else:
+        return render_to_response('erx/done.html', {'message': 'Drug not found:'}, context_instance=RequestContext(request))
 
 #Retrieve drug details based on the primary key
 def select(request, rxaui):

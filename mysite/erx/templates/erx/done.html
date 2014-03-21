@@ -2,12 +2,21 @@
 <h1> {{ message }} </h1>
 
 {% load url from future %}
+
 {% for drug in list %}
 <li>
 <a href="{% url 'erx:select' drug.rxaui %}">{{ drug }}</a>
 </li>
 <br>
 {% endfor %}
+
+{% for patient in patients %}
+<li>
+<a href="{% url 'erx:handle_patient' patient.medical_id %}">{{ patient }}</a>
+</li>
+<br>
+{% endfor %}
+
 {% csrf_token %}
 <br><br><hr><p>Done page.</p>
 </body>

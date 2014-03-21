@@ -8,6 +8,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.6/ref/settings/
 """
 
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
@@ -15,6 +16,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.6/howto/deployment/checklist/
+
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = '6iz)lg34mee8&0no(06r@q-pg(oxjv)$h^-ecy0ey5w&xa&*_i'
@@ -62,7 +64,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': os.path.join(BASE_DIR, 'viraj.db.sqlite3'),
     },
-    'default': {
+    'mysql': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'erx',
         'USER': 'root',
@@ -70,7 +72,7 @@ DATABASES = {
         'HOST': 'localhost',
         'PORT': '22381'
     },
-    'mongo': {
+    'default': {
         'ENGINE': 'django_mongodb_engine',
         'NAME': 'erx_db',
         'USER': 'root',
@@ -80,6 +82,9 @@ DATABASES = {
     },
 }
 
+from django.db import connections
+
+DATABASE_ROUTERS = ['erx.routers.PatientRouter']
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.6/topics/i18n/
