@@ -38,29 +38,26 @@ def getAllPatients(request):
 
     if request.method == 'GET':
         patients = Patient.objects.all()
-        plist = []
-        for patient in patients:
-            list.append(str(patient))
-        return render_to_response('erx/done.html', {'message': 'All patients:', 'patients': plist},
+        return render_to_response('erx/done.html', {'message': 'All patients:', 'patients': patients},
             context_instance=RequestContext(request))
     else:
         return render_to_response('erx/done.html', {'message': 'Not allowed.'},
             context_instance=RequestContext(request))
 
 #Handle patient URL
-def handlePatient(request, patient):
-    print request.POST
-    
+def handlePatient(request, patient_uid):
+
     if request.method == 'GET':
-        patient1 = get_object_or_404(Patient, uid=patient)
-        form = PatientForm(instance=patient1)
+        patient = get_object_or_404(Patient, uid=patient_uid)
+        form = PatientForm(instance=patient)
         return render_to_response('erx/form.html', {'message': 'Patient found',
                                                     'form': form},
             context_instance=RequestContext(request))
 
     if request.method == 'POST':
-        try:
-            patient = get_object_or_404(Patient, uid=patient)
+
+        if 'update' in request.POST:
+            patient = get_object_or_404(Patient, uid=patient_uid)
             form = PatientForm(request.POST, instance=patient)
             if form.is_valid():
                 form.save()
@@ -69,33 +66,16 @@ def handlePatient(request, patient):
             else:
                 return render_to_response('erx/done.html', {'message': 'Patient %s not saved.\nErrors: %s ' % (patient, form.errors)},
                     context_instance=RequestContext(request))
-        except Exception as e:
-            print 'error::', e
-            return render_to_response('erx/done.html', {'message': e},
-                    context_instance=RequestContext(request))
+        else:#to do
+            if 'delete' in request.POST:
+                try:
+                    Patient.objects.filter(uid=patient_uid).delete()
+                    return render_to_response('erx/done.html', {'message': 'Patient %s deleted.' % (patient_uid)},
+                        context_instance=RequestContext(request))
+                except Exception as e:
+                    return render_to_response('erx/done.html', {'message': e},
+                        context_instance=RequestContext(request))
 
-#Read patient information
-def getPatient(request, pk):
-    pass
-
-#Update patient information
-def updatePatient(request):
-    pass
-
-#Delete patient information
-def deletePatient(request, patient):
-
-    if request.method == 'POST':
-        try:
-            Patient.objects.filter(uid=patient).delete()
-            return render_to_response('erx/done.html', {'message': 'Patient %s deleted.' % (patient)},
-                    context_instance=RequestContext(request))
-        except:
-            return render_to_response('erx/done.html', {'message': 'Patient %s deletion failed.' % (patient)},
-                    context_instance=RequestContext(request))
-    else:
-        return render_to_response('erx/done.html', {'message': 'Not allowed.' % (patient)},
-                    context_instance=RequestContext(request))
 #
 #End of Patient methods
 #
@@ -148,7 +128,8 @@ def searchPrescription(request):
 #Pharmacy CRUD & Search Methods
 #
 
-def newpharmacy(request):
+#Create pharmacy
+def createPharmacy(request):
 
     if request.method == 'POST':
         form = NewPharmacyForm(request.POST)
@@ -165,7 +146,47 @@ def newpharmacy(request):
        if request.method == "GET":
            return render_to_response('erx/new_pharmacy.html', {'form': NewPharmacyForm}, context_instance=RequestContext(request))
 
+#Get all Pharmacy
+def getAllPharmacy(request):
 
+    if request.method == 'GET':
+        pharmacies = Pharmacy.objects.all()
+        return render_to_response('erx/done.html', {'message': 'All pharmacies:', 'pharmacies': pharmacies},
+            context_instance=RequestContext(request))
+    else:
+        return render_to_response('erx/done.html', {'message': 'Not allowed.'},
+            context_instance=RequestContext(request))
+
+#Handle pharmacy
+def handlePharmacy(request, pharmacy_uid):
+
+    if request.method == 'GET':
+        pharmacy = get_object_or_404(Pharmacy, uid=pharmacy_uid)
+        form = PharmacyForm(instance=pharmacy)
+        return render_to_response('erx/form.html', {'message': 'Pharmacy found',
+                                                    'form': form},
+            context_instance=RequestContext(request))
+
+    if request.method == 'POST':
+        if 'update' in request.POST:
+            pharmacy = get_object_or_404(Pharmacy, uid=pharmacy_uid)
+            form = PharmacyForm(request.POST, instance=pharmacy)
+            if form.is_valid():
+                form.save()
+                return render_to_response('erx/done.html', {'message': 'Pharmacy %s saved.' % (pharmacy)},
+                    context_instance=RequestContext(request))
+            else:
+                return render_to_response('erx/done.html', {'message': 'Pharmacy %s not saved.\nErrors: %s ' % (pharmacy, form.errors)},
+                    context_instance=RequestContext(request))
+        else:#to do
+            if 'delete' in request.POST:
+                try:
+                    Pharmacy.objects.filter(uid=pharmacy_uid).delete()
+                    return render_to_response('erx/done.html', {'message': 'Pharmacy %s deleted.' % (pharmacy_uid)},
+                        context_instance=RequestContext(request))
+                except Exception as e:
+                    return render_to_response('erx/done.html', {'message': e},
+                        context_instance=RequestContext(request))
 #
 #End of Pharmacy methods
 #
