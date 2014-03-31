@@ -1,13 +1,323 @@
+from django import forms
 from django.db import models
 from django.forms import ModelForm
+from django.forms.models import inlineformset_factory
 from django.core.validators import RegexValidator
-from djangotoolbox.fields import ListField, EmbeddedModelField
 
 # Create your models here.
 
 #
-#Patient information table
+#Abstract User Object
 #
+class User(models.Model):
+    user_name = models.CharField(verbose_name='User Name', max_length=20)
+    password = models.CharField(verbose_name='Password', max_length=20)
+    security_question = models.CharField(verbose_name='Security Question', max_length=200)
+    security_answer = models.CharField(verbose_name='Security Answer', max_length=200)
+
+#    class Meta:
+#        abstract = True
+
+class UserForm(ModelForm):
+    class Meta:
+        model = User
+        widgets = { 'password': forms.PasswordInput(), }
+#
+#End of User
+#
+
+
+#
+#Abstract Contact Object
+#
+class Contact(models.Model):
+
+    street_address = models.CharField(verbose_name='Street Address', max_length=200)
+    city = models.CharField(max_length=50, default = 'San Jose')
+    state = models.CharField(max_length = 200, default = 'CA')
+
+    zipcode = models.CharField(max_length=5, validators=[RegexValidator(regex='^\d{5}$',
+        message='Zipcode should be 5 digits', code='Invalid Zipcode')])
+
+    telephone = models.CharField(max_length=12, unique=True, default = 'xxx-xxx-xxxx',
+                                 validators=[RegexValidator(regex='^\d{3}-\d{3}-\d{4}$',
+                                             message='Telephone number should be 10 digits xxx-xxx-xxxx',
+                                             code='Invalid Telephone')])
+    
+    email = models.EmailField(max_length=200, unique=True)
+
+    class Meta:
+        abstract = True
+#
+#End of Contact
+#
+
+
+#
+#Abstract Person Object
+#
+class Person(models.Model):
+
+    first_name = models.CharField(verbose_name='First Name', max_length=200)
+    middle_name = models.CharField(verbose_name='Middle Name', max_length=200, blank=True)
+    last_name = models.CharField(verbose_name='Last Name', max_length=200)
+
+    class Meta:
+        abstract = True
+#
+#End of Person
+#
+
+
+#
+#Concrete Prescriber Object
+#
+class Prescriber(Person, Contact):
+
+    license_id = models.CharField(verbose_name='Authorized License ID', max_length=20)
+    prescriber_id = models.AutoField(primary_key=True)
+    pin_code = models.CharField(verbose_name='PIN', max_length=4,
+                                validators=[RegexValidator(regex='^\d{4}$',
+                                       message='Format has to be 0000',
+                                       code='Invalid PIN Number')])
+
+    def __unicode__(self):
+        if self.middle_name:
+            return self.first_name+" "+self.middle_name+" "+self.last_name
+        else:
+            return self.first_name+" "+self.last_name
+
+class PrescriberForm(ModelForm):
+    class Meta:
+        model = Prescriber
+        widgets = { 'pin_code': forms.PasswordInput(), }
+#
+#End of Prescriber
+#
+
+
+#
+#Patient Object
+#
+gender_choices = (
+    ('Male', 'MALE'),
+    ('Female', 'FEMALE'),
+)
+
+class Patient(Person, Contact):
+
+    medical_id = models.CharField(verbose_name='Medical ID', unique=True, max_length=11,
+                           validators=[RegexValidator(regex='^\d{3}-\d{2}-\d{4}$',
+                                       message='Format has to be 123-45-6789',
+                                       code='Invalid Medical ID')],
+          default='xxx-xx-xxxx')
+
+    patient_id = models.AutoField(primary_key=True)
+
+    birth_date = models.DateField(verbose_name='Date of Birth ', default='mm/dd/yyyy')
+    gender = models.CharField(verbose_name='Gender', max_length=20, choices=gender_choices)
+    weight = models.CharField(verbose_name='Weight (in lbs)', max_length=20)
+    height = models.CharField(verbose_name='Height (in cm)', max_length=20) 
+    date_added = models.DateTimeField(auto_now_add = True)
+
+    em_contact_name = models.CharField(verbose_name='Emergency Contact Name', max_length=100)
+    em_contact_phone = models.CharField(verbose_name='Emergency Contact Telephone', max_length=12, unique=True, default = 'xxx-xxx-xxxx',
+                                 validators=[RegexValidator(regex='^\d{3}-\d{3}-\d{4}$',
+                                             message='Telephone number should be 10 digits xxx-xxx-xxxx',
+                                             code='Invalid Telephone')])
+
+    prescriber = models.OneToOneField(Prescriber)
+
+    def __unicode__(self):
+        if self.middle_name:
+            return self.first_name+" "+self.middle_name+" "+self.last_name+" (" + self.medical_id + ")"
+        else:
+            return self.first_name+" "+self.last_name+" ("+self.medical_id+ ")"
+
+
+class PatientForm(ModelForm):
+    class Meta:
+        model = Patient
+#
+#End of Patient
+#
+
+
+#
+#Pharmacy Object
+#
+class Pharmacy(Contact):
+
+    pharmacy_name = models.CharField(verbose_name='Pharmacy Name', max_length=200)
+    pharmacy_id = models.AutoField(primary_key=True)
+
+    license_id = models.CharField(verbose_name='Pharmacy License ID', max_length=11,
+                           validators=[RegexValidator(regex='^\d{3}-\d{2}-\d{4}$',
+                                       message='Format has to be 123-45-6789',
+                                       code='Invalid License ID')],
+          default='xxx-xx-xxxx')
+
+    def __unicode__(self):
+        return self.pharmacy_name
+
+
+class PharmacyForm(ModelForm):
+    class Meta:
+        model = Pharmacy
+#
+#End of Pharmacy
+#
+
+
+#
+#Lab Test Object
+#
+class LabTest(models.Model):
+
+    lab_history = models.ForeignKey('LabHistory')
+    test_name = models.CharField(verbose_name='Test Name', max_length=200)
+    test_result = models.CharField(verbose_name='Test Result', max_length=2000)
+    normal_range = models.CharField(verbose_name='Normal Range', max_length=2000)
+    units = models.CharField(verbose_name='Units', max_length=200)
+#
+#End of Lab Test 
+#
+
+
+#
+#Lab History Object
+#
+class LabHistory(models.Model):
+
+    test_id = models.CharField(verbose_name='Test ID', max_length=200)
+    patient = models.ForeignKey('Patient')
+    prescriber = models.ForeignKey('Prescriber')
+    test_date = models.DateField(verbose_name='Date of Test', default='mm/dd/yyyy')
+    pmh = models.ForeignKey('PatientMedicalHistory')
+
+#
+#End of Lab History
+#
+
+
+#
+#Patient Medical History Object
+#
+class PatientMedicalHistory(models.Model):
+
+    patient_id = models.ForeignKey('Patient')
+    food_allergy = models.CharField(verbose_name='Known Food Allergies', max_length=4000, default='Enter CSV values')
+    current_medications = models.CharField(verbose_name='Current Medications', max_length=4000, default='Enter CSV values')
+    current_ailments = models.CharField(verbose_name='Current Ailments diagnosed', max_length=4000, default='Enter CSV values')
+    
+#
+#End of Patient Medical History
+#
+
+
+#
+#Prescription Object
+#
+st_choices = (
+    ('PENDING', 'Pending'),
+    ('SUBMITTED', 'Submitted'),
+    ('Dispensed', 'Dispensed'),
+)
+
+class Prescription(models.Model):
+
+    rx_id = models.AutoField(primary_key=True)
+    prescriber = models.OneToOneField(Prescriber)
+
+    patient = models.OneToOneField(Patient)
+    sp_instructions = models.CharField(verbose_name='Special Instructions', max_length=2000, blank=True)
+
+    pharmacy = models.OneToOneField(Pharmacy)
+    note = models.CharField(verbose_name='Note to Pharmacy', max_length=2000, blank=True)
+
+    created_date = models.DateTimeField(auto_now_add = True)
+    last_modified = models.DateTimeField(auto_now=True)
+    submitted_date = models.DateTimeField(verbose_name='Date of Submission')
+
+    status = models.CharField('Status', max_length=20, choices=st_choices)
+
+    def __unicode__(self):
+        return "%s %s %s "%(self.created_date, self.prescriber, self.patient)
+
+class PrescriptionForm(ModelForm):
+    class Meta:
+        model = Prescription
+
+#
+#End of Prescription
+#
+
+
+#
+#RxEntry Object
+#
+refill_choices = (
+    (0,0),
+    (1,1),
+    (2,2),
+    (3,3),
+)
+
+class RxEntry(models.Model):
+
+    drug_name = models.CharField(verbose_name='Drug with concentration', max_length=200)
+    drug_schedule = models.CharField(verbose_name='Dosage Instructions', max_length=2000)    
+    drug_quantity = models.CharField(verbose_name='Dosage Amount', max_length=2000)
+    drug_substitution = models.BooleanField(verbose_name='Substitution allowed?')
+    refills = models.IntegerField('Number of Refills', max_length=5, choices=refill_choices, default=0)
+    prescription = models.ForeignKey(Prescription)
+
+
+RxEntryForm = inlineformset_factory(Prescription, RxEntry, extra=1, fields=('drug_name', 'drug_schedule',
+                                                                            'drug_quantity',
+                                                                            'drug_substitution', 'refills'),
+                                    can_delete=True)
+#
+#End of RxEntry
+#
+
+"""
+#
+#RxNorm drug database
+#
+class Rxnconso(models.Model):
+    rxcui = models.CharField(db_column='RXCUI', max_length=8) # Field name made lowercase.
+    lat = models.CharField(db_column='LAT', max_length=3) # Field name made lowercase.
+    ts = models.CharField(db_column='TS', max_length=1, blank=True) # Field name made lowercase.
+    lui = models.CharField(db_column='LUI', max_length=8, blank=True) # Field name made lowercase.
+    stt = models.CharField(db_column='STT', max_length=3, blank=True) # Field name made lowercase.
+    sui = models.CharField(db_column='SUI', max_length=8, blank=True) # Field name made lowercase.
+    ispref = models.CharField(db_column='ISPREF', max_length=1, blank=True) # Field name made lowercase.
+    rxaui = models.CharField(db_column='RXAUI', max_length=8, primary_key=True) # Field name made lowercase.
+    saui = models.CharField(db_column='SAUI', max_length=50, blank=True) # Field name made lowercase.
+    scui = models.CharField(db_column='SCUI', max_length=50, blank=True) # Field name made lowercase.
+    sdui = models.CharField(db_column='SDUI', max_length=50, blank=True) # Field name made lowercase.
+    sab = models.CharField(db_column='SAB', max_length=20) # Field name made lowercase.
+    tty = models.CharField(db_column='TTY', max_length=20) # Field name made lowercase.
+    code = models.CharField(db_column='CODE', max_length=50) # Field name made lowercase.
+    str = models.CharField(db_column='STR', max_length=3000) # Field name made lowercase.
+    srl = models.CharField(db_column='SRL', max_length=10, blank=True) # Field name made lowercase.
+    suppress = models.CharField(db_column='SUPPRESS', max_length=1, blank=True) # Field name made lowercase.
+    cvf = models.CharField(db_column='CVF', max_length=50, blank=True) # Field name made lowercase.
+    refills = models.IntegerField('Number of Refills', max_length=5, choices=refill_choices, default=0)
+    class Meta:
+        db_table = 'RXNCONSO'
+
+    def __unicode__(self):
+        return self.str
+
+    def getDrug(self):
+        return self.str
+#
+#End of Rxconso
+#
+
+
 gender_choices = (
     ('Male', 'MALE'),
     ('Female', 'FEMALE'),
@@ -88,7 +398,7 @@ class NewPatient(Patient, Contact):
 class NewPatientForm(ModelForm):
     class Meta:
         model = NewPatient
-#
+#last_modified = models.DateTimeField(auto_now=True)
 #End of NewPatient
 #
 
@@ -184,39 +494,4 @@ class PrescriptionForm(ModelForm):
 #End of prescription object
 #
 
-
-
-#
-#RxNorm drug database
-#
-class Rxnconso(models.Model):
-    rxcui = models.CharField(db_column='RXCUI', max_length=8) # Field name made lowercase.
-    lat = models.CharField(db_column='LAT', max_length=3) # Field name made lowercase.
-    ts = models.CharField(db_column='TS', max_length=1, blank=True) # Field name made lowercase.
-    lui = models.CharField(db_column='LUI', max_length=8, blank=True) # Field name made lowercase.
-    stt = models.CharField(db_column='STT', max_length=3, blank=True) # Field name made lowercase.
-    sui = models.CharField(db_column='SUI', max_length=8, blank=True) # Field name made lowercase.
-    ispref = models.CharField(db_column='ISPREF', max_length=1, blank=True) # Field name made lowercase.
-    rxaui = models.CharField(db_column='RXAUI', max_length=8, primary_key=True) # Field name made lowercase.
-    saui = models.CharField(db_column='SAUI', max_length=50, blank=True) # Field name made lowercase.
-    scui = models.CharField(db_column='SCUI', max_length=50, blank=True) # Field name made lowercase.
-    sdui = models.CharField(db_column='SDUI', max_length=50, blank=True) # Field name made lowercase.
-    sab = models.CharField(db_column='SAB', max_length=20) # Field name made lowercase.
-    tty = models.CharField(db_column='TTY', max_length=20) # Field name made lowercase.
-    code = models.CharField(db_column='CODE', max_length=50) # Field name made lowercase.
-    str = models.CharField(db_column='STR', max_length=3000) # Field name made lowercase.
-    srl = models.CharField(db_column='SRL', max_length=10, blank=True) # Field name made lowercase.
-    suppress = models.CharField(db_column='SUPPRESS', max_length=1, blank=True) # Field name made lowercase.
-    cvf = models.CharField(db_column='CVF', max_length=50, blank=True) # Field name made lowercase.
-
-    class Meta:
-        db_table = 'RXNCONSO'
-
-    def __unicode__(self):
-        return self.str
-
-    def getDrug(self):
-        return self.str
-#
-#End of Rxconso
-#
+"""

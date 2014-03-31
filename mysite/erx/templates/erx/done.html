@@ -1,4 +1,5 @@
 <html>
+{% load url from future %}
 <h1> {{ message }} </h1>
 
 
@@ -11,14 +12,29 @@
 
 {% for patient in patients %}
 <li>
-<a href="{% url 'erx:handle_patient' patient.uid %}">{{ patient }}</a>
+<a href="{% url 'erx:handle_patient' patient.patient_id %}">{{ patient }}</a>
 </li>
 <br>
 {% endfor %}
 
 {% for pharmacy in pharmacies %}
 <li>
-<a href="{% url 'erx:handle_pharmacy' pharmacy.uid %}">{{ pharmacy }}</a>
+<a href="{% url 'erx:handle_pharmacy' pharmacy.pharmacy_id %}">{{ pharmacy }}</a>
+</li>
+<br>
+{% endfor %}
+
+{% for prescriber in prescribers %}
+<li>
+<a href="{% url 'erx:handle_prescriber' prescriber.prescriber_id %}">{{ prescriber }}</a>
+</li>
+<br>
+{% endfor %}
+
+
+{% for prescription in prescriptions %}
+<li>
+<a href="{% url 'erx:handle_prescription' prescription.rx_id %}">{{ prescription }}</a>
 </li>
 <br>
 {% endfor %}
