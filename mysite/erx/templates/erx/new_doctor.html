@@ -1,0 +1,14 @@
+<html>
+<h1>New Doctor</h1><hr>
+<p>Please enter new doctor information below.</p><br>
+<body>
+<form action="." method="post">{% csrf_token %}
+
+{{ form.as_p }}
+
+<input type="submit" value="Submit">
+</form>
+
+<br><br><hr><p>New doctor page.</p>
+</body></html>
+
