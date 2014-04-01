@@ -1,11 +1,12 @@
 import sys, copy
 
+from django.forms.models import inlineformset_factory
 from django.shortcuts import render_to_response, get_object_or_404
 from django.views import generic
 from django.http import HttpResponse
 from django.template import RequestContext
 
-from erx.models import Prescriber, Patient, Pharmacy, Prescription, RxEntry
+from erx.models import Prescriber, Patient, Pharmacy, Prescription, RxEntry#, Rxnconso
 from erx.models import PrescriberForm, PatientForm, PharmacyForm, PrescriptionForm, RxEntryForm
 
 #Create your views here.
@@ -76,7 +77,7 @@ def handlePrescriber(request, prescriber_id):
                     return render_to_response('erx/done.html', {'message': e},
                         context_instance=RequestContext(request))
 
-
+#
 #End of Prescriber Methods
 #
 
@@ -147,6 +148,25 @@ def handlePatient(request, patient_id):
                     return render_to_response('erx/done.html', {'message': e},
                         context_instance=RequestContext(request))
 
+
+#get patients by prescriber
+def getPatientByPrescriber(request, p_id):
+
+    if request.method == 'GET':
+        prescriber = get_object_or_404(Prescriber, prescriber_id=p_id)
+        patient_list = Patient.objects.filter(prescriber=prescriber)
+
+        if patient_list.count() > 0:
+            return render_to_response('erx/done.html', {'message': 'Patient of %s:' % (prescriber),
+                                                        'patients': patient_list},
+                context_instance=RequestContext(request))
+
+        else:
+            return render_to_response('erx/done.html', {'message': 'No patients found for %s.' % (prescriber)},
+                context_instance=RequestContext(request))
+    else:
+        return render_to_response('erx/done.html', {'message': 'Not allowed.'},
+            context_instance=RequestContext(request))
 #
 #End of Patient methods
 #
@@ -232,15 +252,20 @@ def createPrescription(request):
         form = PrescriptionForm(request.POST)
 
         if form.is_valid():
-            form.save()
-            return render_to_response('erx/done.html', {'message': "Prescription Saved."}, context_instance=RequestContext(request))
-
+            instance=form.save()
+            rxentry = RxEntryForm(request.POST, instance=instance)
+            if rxentry.is_valid():
+                rxentry.save()
+                return render_to_response('erx/done.html', {'message': "Prescription Saved."}, context_instance=RequestContext(request))
+            else:
+                return render_to_response('erx/done.html', {'message': rxentry.errors}, context_instance=RequestContext(request))
         else:
             return render_to_response('erx/done.html', {'message': form.errors}, context_instance=RequestContext(request))
 
     else:
         if request.method == "GET":
-            return render_to_response('erx/new_prescription.html', {'form': PrescriptionForm, 'rxform': RxEntryForm}, context_instance=RequestContext(request))
+            return render_to_response('erx/new_prescription.html',
+                {'form': PrescriptionForm, 'rxform': RxEntryForm}, context_instance=RequestContext(request))
 
 
 #get all prescription
@@ -255,14 +280,15 @@ def getAllPrescription(request):
             context_instance=RequestContext(request))
 
 
-#handle prescription: GET, POST, DELETE
+#handle prescription: GET using ID, POST, DELETE
 def handlePrescription(request, rx_id):
 
     if request.method == 'GET':
         rx = get_object_or_404(Prescription, rx_id=rx_id)
         form = PrescriptionForm(instance=rx)
+        rxentry = RxEntry.objects.filter(prescription=rx)
         return render_to_response('erx/form.html', {'message': 'Prescription found',
-                                                    'form': form},
+                                                    'form': form, 'rxentry': rxentry},
             context_instance=RequestContext(request))
 
     if request.method == 'POST':
@@ -270,13 +296,14 @@ def handlePrescription(request, rx_id):
             rx = get_object_or_404(Prescription, rx_id=rx_id)
             form = PrescriptionForm(request.POST, instance=rx)
             if form.is_valid():
-                form.save()
+                instance=form.save()
                 return render_to_response('erx/done.html', {'message': 'Prescription %s saved.' % (rx)},
                     context_instance=RequestContext(request))
             else:
                 return render_to_response('erx/done.html', {'message': 'Prescription %s not saved.\nErrors: %s ' % (rx, form.errors)},
                     context_instance=RequestContext(request))
-        else:#to do
+
+        else:
             if 'delete' in request.POST:
                 try:
                     Prescription.objects.filter(rx_id=rx_id).delete()
@@ -285,6 +312,47 @@ def handlePrescription(request, rx_id):
                 except Exception as e:
                     return render_to_response('erx/done.html', {'message': e},
                         context_instance=RequestContext(request))
+
+
+#get prescriptions by prescriber
+def getPrescriptionByPrescriber(request, p_id):
+
+    if request.method == 'GET':
+        prescriber = get_object_or_404(Prescriber, prescriber_id=p_id)
+        prescriptions = Prescription.objects.filter(prescriber=prescriber)
+
+        if prescriptions.count() > 0:
+            return render_to_response('erx/done.html', {'message': 'Prescriptions found for %s:' % (prescriber),
+                                                        'prescriptions': prescriptions},
+                context_instance=RequestContext(request))
+
+        else:
+            return render_to_response('erx/done.html', {'message': 'No prescriptions found for %s.' % (prescriber)},
+                context_instance=RequestContext(request))
+    else:
+        return render_to_response('erx/done.html', {'message': 'Not allowed.'},
+            context_instance=RequestContext(request))
+
+
+#get prescriptions by patient
+def getPrescriptionByPatient(request, p_id):
+
+    if request.method == 'GET':
+        patient = get_object_or_404(Patient, patient_id=p_id)
+        prescriptions = Prescription.objects.filter(patient=patient)
+
+        if prescriptions.count() > 0:
+            return render_to_response('erx/done.html', {'message': 'Prescriptions found for %s:' % (patient),
+                                                        'prescriptions': prescriptions},
+                context_instance=RequestContext(request))
+
+        else:
+            return render_to_response('erx/done.html', {'message': 'No prescriptions found for %s.' % (patient)},
+                context_instance=RequestContext(request))
+    else:
+        return render_to_response('erx/done.html', {'message': 'Not allowed.'},
+            context_instance=RequestContext(request))
+
 #
 #End of prescription methods
 #

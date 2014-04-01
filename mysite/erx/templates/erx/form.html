@@ -3,9 +3,19 @@
 <h1> {{ message }} </h1>
 
 <body>
-<form action="." method="post">
+<form method="post">
 
 {{ form.as_p }}
+<fieldset name="Drugs prescribed">
+
+{% for drug in rxentry %}
+<li>
+{{ drug }}
+</li>
+<br>
+{% endfor %}
+</fieldset>
+<br>
 
 <input type="submit" value="Update" name="update">
 <input type="submit" value="Delete" name="delete">

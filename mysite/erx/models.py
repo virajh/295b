@@ -1,7 +1,9 @@
-from django import forms
 from django.db import models
+
+from django import forms
 from django.forms import ModelForm
 from django.forms.models import inlineformset_factory
+
 from django.core.validators import RegexValidator
 
 # Create your models here.
@@ -126,7 +128,7 @@ class Patient(Person, Contact):
                                              message='Telephone number should be 10 digits xxx-xxx-xxxx',
                                              code='Invalid Telephone')])
 
-    prescriber = models.OneToOneField(Prescriber)
+    prescriber = models.ForeignKey(Prescriber)
 
     def __unicode__(self):
         if self.middle_name:
@@ -227,12 +229,12 @@ st_choices = (
 class Prescription(models.Model):
 
     rx_id = models.AutoField(primary_key=True)
-    prescriber = models.OneToOneField(Prescriber)
+    prescriber = models.ForeignKey(Prescriber)
 
-    patient = models.OneToOneField(Patient)
+    patient = models.ForeignKey(Patient)
     sp_instructions = models.CharField(verbose_name='Special Instructions', max_length=2000, blank=True)
 
-    pharmacy = models.OneToOneField(Pharmacy)
+    pharmacy = models.ForeignKey(Pharmacy)
     note = models.CharField(verbose_name='Note to Pharmacy', max_length=2000, blank=True)
 
     created_date = models.DateTimeField(auto_now_add = True)
@@ -272,11 +274,14 @@ class RxEntry(models.Model):
     refills = models.IntegerField('Number of Refills', max_length=5, choices=refill_choices, default=0)
     prescription = models.ForeignKey(Prescription)
 
+    def __unicode__(self):
+        return "%s\n%s\n%s\n" % (self.drug_name, self.drug_schedule, self.drug_quantity)
 
-RxEntryForm = inlineformset_factory(Prescription, RxEntry, extra=1, fields=('drug_name', 'drug_schedule',
+RxEntryForm = inlineformset_factory(Prescription, RxEntry, extra=2, fields=('drug_name', 'drug_schedule',
                                                                             'drug_quantity',
                                                                             'drug_substitution', 'refills'),
                                     can_delete=True)
+
 #
 #End of RxEntry
 #

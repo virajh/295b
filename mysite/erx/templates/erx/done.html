@@ -31,7 +31,6 @@
 <br>
 {% endfor %}
 
-
 {% for prescription in prescriptions %}
 <li>
 <a href="{% url 'erx:handle_prescription' prescription.rx_id %}">{{ prescription }}</a>
