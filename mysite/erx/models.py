@@ -1,33 +1,7 @@
+from django.core.validators import RegexValidator
 from django.db import models
 
-from django import forms
-from django.forms import ModelForm
-from django.forms.models import inlineformset_factory
-
-from django.core.validators import RegexValidator
-
 # Create your models here.
-
-#
-#Abstract User Object
-#
-class User(models.Model):
-    user_name = models.CharField(verbose_name='User Name', max_length=20)
-    password = models.CharField(verbose_name='Password', max_length=20)
-    security_question = models.CharField(verbose_name='Security Question', max_length=200)
-    security_answer = models.CharField(verbose_name='Security Answer', max_length=200)
-
-#    class Meta:
-#        abstract = True
-
-class UserForm(ModelForm):
-    class Meta:
-        model = User
-        widgets = { 'password': forms.PasswordInput(), }
-#
-#End of User
-#
-
 
 #
 #Abstract Contact Object
@@ -88,11 +62,6 @@ class Prescriber(Person, Contact):
             return self.first_name+" "+self.middle_name+" "+self.last_name
         else:
             return self.first_name+" "+self.last_name
-
-class PrescriberForm(ModelForm):
-    class Meta:
-        model = Prescriber
-        widgets = { 'pin_code': forms.PasswordInput(), }
 #
 #End of Prescriber
 #
@@ -135,11 +104,6 @@ class Patient(Person, Contact):
             return self.first_name+" "+self.middle_name+" "+self.last_name+" (" + self.medical_id + ")"
         else:
             return self.first_name+" "+self.last_name+" ("+self.medical_id+ ")"
-
-
-class PatientForm(ModelForm):
-    class Meta:
-        model = Patient
 #
 #End of Patient
 #
@@ -161,13 +125,68 @@ class Pharmacy(Contact):
 
     def __unicode__(self):
         return self.pharmacy_name
-
-
-class PharmacyForm(ModelForm):
-    class Meta:
-        model = Pharmacy
 #
 #End of Pharmacy
+#
+
+
+#
+#Prescription Object
+#
+st_choices = (
+    ('PENDING', 'Pending'),
+    ('SUBMITTED', 'Submitted'),
+    ('Dispensed', 'Dispensed'),
+)
+
+class Prescription(models.Model):
+
+    rx_id = models.AutoField(primary_key=True)
+    prescriber = models.ForeignKey(Prescriber)
+
+    patient = models.ForeignKey(Patient)
+    sp_instructions = models.CharField(verbose_name='Special Instructions', max_length=2000, blank=True)
+
+    pharmacy = models.ForeignKey(Pharmacy)
+    note = models.CharField(verbose_name='Note to Pharmacy', max_length=2000, blank=True)
+
+    created_date = models.DateTimeField(auto_now_add = True)
+    last_modified = models.DateTimeField(auto_now=True)
+    submitted_date = models.DateField(verbose_name='Date of Submission')
+
+    status = models.CharField('Status', max_length=20, choices=st_choices)
+
+    def __unicode__(self):
+        return "%s %s %s "%(self.created_date, self.prescriber, self.patient)
+#
+#End of Prescription
+#
+
+
+#
+#RxEntry Object
+#
+refill_choices = (
+    (0,0),
+    (1,1),
+    (2,2),
+    (3,3),
+)
+
+class RxEntry(models.Model):
+
+    drug_name = models.CharField(verbose_name='Drug with concentration', max_length=200)
+    drug_schedule = models.CharField(verbose_name='Dosage Instructions', max_length=2000)    
+    drug_quantity = models.CharField(verbose_name='Dosage Amount', max_length=2000)
+    drug_substitution = models.BooleanField(verbose_name='Substitution allowed?')
+    refills = models.IntegerField('Number of Refills', max_length=5, choices=refill_choices, default=0)
+    prescription = models.ForeignKey(Prescription)
+
+    def __unicode__(self):
+        return "%s\n%s\n%s\n" % (self.drug_name, self.drug_schedule, self.drug_quantity)
+
+#
+#End of RxEntry
 #
 
 
@@ -215,74 +234,6 @@ class PatientMedicalHistory(models.Model):
 #
 #End of Patient Medical History
 #
-
-
-#
-#Prescription Object
-#
-st_choices = (
-    ('PENDING', 'Pending'),
-    ('SUBMITTED', 'Submitted'),
-    ('Dispensed', 'Dispensed'),
-)
-
-class Prescription(models.Model):
-
-    rx_id = models.AutoField(primary_key=True)
-    prescriber = models.ForeignKey(Prescriber)
-
-    patient = models.ForeignKey(Patient)
-    sp_instructions = models.CharField(verbose_name='Special Instructions', max_length=2000, blank=True)
-
-    pharmacy = models.ForeignKey(Pharmacy)
-    note = models.CharField(verbose_name='Note to Pharmacy', max_length=2000, blank=True)
-
-    created_date = models.DateTimeField(auto_now_add = True)
-    last_modified = models.DateTimeField(auto_now=True)
-    submitted_date = models.DateTimeField(verbose_name='Date of Submission')
-
-    status = models.CharField('Status', max_length=20, choices=st_choices)
-
-    def __unicode__(self):
-        return "%s %s %s "%(self.created_date, self.prescriber, self.patient)
-
-class PrescriptionForm(ModelForm):
-    class Meta:
-        model = Prescription
-
-#
-#End of Prescription
-#
-
-
-#
-#RxEntry Object
-#
-refill_choices = (
-    (0,0),
-    (1,1),
-    (2,2),
-    (3,3),
-)
-
-class RxEntry(models.Model):
-
-    drug_name = models.CharField(verbose_name='Drug with concentration', max_length=200)
-    drug_schedule = models.CharField(verbose_name='Dosage Instructions', max_length=2000)    
-    drug_quantity = models.CharField(verbose_name='Dosage Amount', max_length=2000)
-    drug_substitution = models.BooleanField(verbose_name='Substitution allowed?')
-    refills = models.IntegerField('Number of Refills', max_length=5, choices=refill_choices, default=0)
-    prescription = models.ForeignKey(Prescription)
-
-    def __unicode__(self):
-        return "%s\n%s\n%s\n" % (self.drug_name, self.drug_schedule, self.drug_quantity)
-
-RxEntryForm = inlineformset_factory(Prescription, RxEntry, can_delete=True, extra=1)
-
-#
-#End of RxEntry
-#
-
 """
 #
 #RxNorm drug database
@@ -496,4 +447,24 @@ class PrescriptionForm(ModelForm):
 #End of prescription object
 #
 
+
+#
+#Abstract User Object
+#
+class User(models.Model):
+    user_name = models.CharField(verbose_name='User Name', max_length=20)
+    password = models.CharField(verbose_name='Password', max_length=20)
+    security_question = models.CharField(verbose_name='Security Question', max_length=200)
+    security_answer = models.CharField(verbose_name='Security Answer', max_length=200)
+
+#    class Meta:
+#        abstract = True
+
+class UserForm(ModelForm):
+    class Meta:
+        model = User
+        widgets = { 'password': forms.PasswordInput(), }
+#
+#End of User
+#
 """
