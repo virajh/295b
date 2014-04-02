@@ -258,7 +258,7 @@ def createPrescription(request):
             
             if rxentry.is_valid():
                 rxentry.save()
-                return render_to_response('erx/done.html', {'message': str(type(rxentry))}, context_instance=RequestContext(request))
+                return render_to_response('erx/done.html', {'message': "Prescription created."}, context_instance=RequestContext(request))
 
             else:
                 return render_to_response('erx/done.html', {'message': rxentry.errors}, context_instance=RequestContext(request))
