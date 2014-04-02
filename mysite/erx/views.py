@@ -1,6 +1,7 @@
 import sys, copy
 
 from django.forms.models import inlineformset_factory
+from django.forms.formsets import formset_factory
 from django.shortcuts import render_to_response, get_object_or_404
 from django.views import generic
 from django.http import HttpResponse
@@ -254,11 +255,14 @@ def createPrescription(request):
         if form.is_valid():
             instance=form.save()
             rxentry = RxEntryForm(request.POST, instance=instance)
+
             if rxentry.is_valid():
                 rxentry.save()
                 return render_to_response('erx/done.html', {'message': "Prescription Saved."}, context_instance=RequestContext(request))
+
             else:
                 return render_to_response('erx/done.html', {'message': rxentry.errors}, context_instance=RequestContext(request))
+
         else:
             return render_to_response('erx/done.html', {'message': form.errors}, context_instance=RequestContext(request))
 
@@ -286,9 +290,13 @@ def handlePrescription(request, rx_id):
     if request.method == 'GET':
         rx = get_object_or_404(Prescription, rx_id=rx_id)
         form = PrescriptionForm(instance=rx)
-        rxentry = RxEntry.objects.filter(prescription=rx)
-        return render_to_response('erx/form.html', {'message': 'Prescription found',
-                                                    'form': form, 'rxentry': rxentry},
+
+        rxentry = RxEntry.objects.filter(prescription=rx).values()
+        RxEntryFormSet = formset_factory(RxEntryForm, extra=0)
+        formset = RxEntryFormSet(initial=rxentry)
+
+        return render_to_response('erx/cur_prescription.html', {'message': 'Prescription found',
+                                                    'form': form, 'rxform': rxentry},
             context_instance=RequestContext(request))
 
     if request.method == 'POST':

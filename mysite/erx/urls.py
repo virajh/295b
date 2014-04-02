@@ -1,8 +1,10 @@
 from django.conf.urls import patterns, url
 
-from erx import views
+from erx import views, newviews
 
 urlpatterns = patterns('',
+
+    url(r'^new/$', newviews.PrescriptionCreateView.as_view()),
 
     url(r'^prescriber/$', views.getAllPrescriber, name='get_all_prescriber'),
     url(r'^prescriber/new/$', views.createPrescriber, name='new_prescriber'),

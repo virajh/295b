@@ -277,10 +277,7 @@ class RxEntry(models.Model):
     def __unicode__(self):
         return "%s\n%s\n%s\n" % (self.drug_name, self.drug_schedule, self.drug_quantity)
 
-RxEntryForm = inlineformset_factory(Prescription, RxEntry, extra=2, fields=('drug_name', 'drug_schedule',
-                                                                            'drug_quantity',
-                                                                            'drug_substitution', 'refills'),
-                                    can_delete=True)
+RxEntryForm = inlineformset_factory(Prescription, RxEntry, can_delete=True, extra=1)
 
 #
 #End of RxEntry
