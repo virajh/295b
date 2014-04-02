@@ -255,10 +255,10 @@ def createPrescription(request):
         if form.is_valid():
             instance=form.save()
             rxentry = RxEntryForm(request.POST, instance=instance)
-
+            
             if rxentry.is_valid():
                 rxentry.save()
-                return render_to_response('erx/done.html', {'message': "Prescription Saved."}, context_instance=RequestContext(request))
+                return render_to_response('erx/done.html', {'message': str(type(rxentry))}, context_instance=RequestContext(request))
 
             else:
                 return render_to_response('erx/done.html', {'message': rxentry.errors}, context_instance=RequestContext(request))
@@ -289,24 +289,30 @@ def handlePrescription(request, rx_id):
 
     if request.method == 'GET':
         rx = get_object_or_404(Prescription, rx_id=rx_id)
-        form = PrescriptionForm(instance=rx)
 
-        rxentry = RxEntry.objects.filter(prescription=rx).values()
-        RxEntryFormSet = formset_factory(RxEntryForm, extra=0)
-        formset = RxEntryFormSet(initial=rxentry)
+        form = PrescriptionForm(instance=rx)
+        rxforms = RxEntryForm(instance=rx)
 
         return render_to_response('erx/cur_prescription.html', {'message': 'Prescription found',
-                                                    'form': form, 'rxform': rxentry},
+                                                    'form': form, 'rxform': rxforms},
             context_instance=RequestContext(request))
 
     if request.method == 'POST':
-        if 'update' in request.POST:
-            rx = get_object_or_404(Prescription, rx_id=rx_id)
+        rx = get_object_or_404(Prescription, rx_id=rx_id)
+
+        if 'update' in request.POST:            
             form = PrescriptionForm(request.POST, instance=rx)
+
             if form.is_valid():
                 instance=form.save()
-                return render_to_response('erx/done.html', {'message': 'Prescription %s saved.' % (rx)},
-                    context_instance=RequestContext(request))
+                rxentry = RxEntryForm(request.POST, instance=instance)
+
+                if rxentry.is_valid():
+                    rxentry.save()
+                    return render_to_response('erx/done.html', {'message': 'Prescription %s updated.' % (rx)},
+                                              context_instance=RequestContext(request))
+                else:
+                    return render_to_response('erx/done.html', {'message': rxentry.errors}, context_instance=RequestContext(request))
             else:
                 return render_to_response('erx/done.html', {'message': 'Prescription %s not saved.\nErrors: %s ' % (rx, form.errors)},
                     context_instance=RequestContext(request))
@@ -314,6 +320,7 @@ def handlePrescription(request, rx_id):
         else:
             if 'delete' in request.POST:
                 try:
+                    RxEntry.objects.filter(prescription=rx).delete()
                     Prescription.objects.filter(rx_id=rx_id).delete()
                     return render_to_response('erx/done.html', {'message': 'Prescription deleted.'},
                         context_instance=RequestContext(request))
