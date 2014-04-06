@@ -1,4 +1,5 @@
 from django import forms
+from django.db import models
 from django.forms import ModelForm
 from django.forms.models import inlineformset_factory
 
@@ -28,7 +29,6 @@ class PharmacyForm(ModelForm):
 class PrescriptionForm(ModelForm):
     class Meta:
         model = Prescription
-
 
 #RxEntry form
 RxEntryForm = inlineformset_factory(Prescription, RxEntry, can_delete=True, extra=1)

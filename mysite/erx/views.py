@@ -78,6 +78,10 @@ def handlePrescriber(request, prescriber_id):
                     return render_to_response('erx/done.html', {'message': e},
                         context_instance=RequestContext(request))
 
+#prescriber home
+def prescriberHome(request):
+    return render_to_response('erx/prescriber_home.html', {'prescriber': Prescriber.objects.all()[0]},
+                              context_instance=RequestContext(request))
 #
 #End of Prescriber Methods
 #

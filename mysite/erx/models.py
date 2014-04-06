@@ -1,3 +1,5 @@
+import time
+
 from django.core.validators import RegexValidator
 from django.db import models
 
@@ -152,7 +154,7 @@ class Prescription(models.Model):
 
     created_date = models.DateTimeField(auto_now_add = True)
     last_modified = models.DateTimeField(auto_now=True)
-    submitted_date = models.DateField(verbose_name='Date of Submission')
+    submitted_date = models.DateField(verbose_name='Date of Submission', default=time.strftime("%m/%d/%Y"))
 
     status = models.CharField('Status', max_length=20, choices=st_choices)
 

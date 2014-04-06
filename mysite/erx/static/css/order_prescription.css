@@ -1,0 +1,162 @@
+/* ------- General ------- */
+body {
+	margin: 0;
+	padding: 15px;
+}
+body, textarea {
+	font-family: Arial, Helvetica, sans-serif;
+}
+a {
+	text-decoration: none;
+}
+table {
+	border-spacing: 0;
+}
+th, td {
+	padding: 0;
+}
+fieldset, input, select, textarea {
+	margin: 0;
+}
+fieldset {
+	padding: 10px 15px 15px;
+}
+input[type=text], textarea {
+	padding: 5px;
+	border-radius: 3px;
+}
+input[type=submit] {
+	padding: 4px 8px;
+}
+select {
+	padding: 4px 0px 4px 4px;
+}
+/* ------- Classes ------- */
+.clear:after {
+	clear: both;
+	content: '';
+	display: block;
+}
+.first_column {
+	padding-left: 15px !important;
+}
+.last_column {
+	padding-right: 15px !important;
+}
+.box {
+	padding-top: 15px;
+}
+.fit_width {
+	width: 1px;
+}
+/* ------- Page ------- */
+/* Rules */
+input[type=text], textarea, header table, .nav_tab, #content_box, .result_list {
+	border: 1px solid grey;
+}
+/* Header */
+header table {
+	width: 100%;
+	margin-bottom: 15px;
+	padding: 15px;
+}
+header .label {
+	width: 1px;
+	padding-right: 10px;
+	white-space: nowrap;
+}
+/* Nav */
+nav ul {
+	margin: 0;
+	padding: 0;
+	list-style-type: none;
+	border-bottom: 2px solid grey;
+}
+nav li {
+	float: left;
+}
+.nav_tab {
+	margin-right: 5px;
+	padding: 5px 10px;
+	display: block;
+	color: white;
+	font-size: 12px;
+	background: #7db9e8; /* Old browsers */
+	background: -moz-linear-gradient(top,  #7db9e8 0%, #1e5799 100%); /* FF3.6+ */
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#7db9e8), color-stop(100%,#1e5799)); /* Chrome,Safari4+ */
+	background: -webkit-linear-gradient(top,  #7db9e8 0%,#1e5799 100%); /* Chrome10+,Safari5.1+ */
+	background: -o-linear-gradient(top,  #7db9e8 0%,#1e5799 100%); /* Opera 11.10+ */
+	background: -ms-linear-gradient(top,  #7db9e8 0%,#1e5799 100%); /* IE10+ */
+	background: linear-gradient(to bottom,  #7db9e8 0%,#1e5799 100%); /* W3C */
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#7db9e8', endColorstr='#1e5799',GradientType=0 ); /* IE6-9 */
+	border-bottom: none;
+	border-radius: 5px 5px 0 0;
+}
+.nav_tab.current {
+	color: #1e5799;
+	background: white; /* Old browsers */
+	background: -moz-linear-gradient(top, #ffffff 0%, #dddddd 100%); /* FF3.6+ */
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#ffffff), color-stop(100%,#dddddd)); /* Chrome,Safari4+ */
+	background: -webkit-linear-gradient(top, #ffffff 0%,#dddddd 100%); /* Chrome10+,Safari5.1+ */
+	background: -o-linear-gradient(top, #ffffff 0%,#dddddd 100%); /* Opera 11.10+ */
+	background: -ms-linear-gradient(top, #ffffff 0%,#dddddd 100%); /* IE10+ */
+	background: linear-gradient(to bottom, #ffffff 0%,#dddddd 100%); /* W3C */
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#dddddd',GradientType=0 ); /* IE6-9 */
+}
+/* Content */
+#content_box {
+	min-height: 625px;
+	position: relative;
+}
+.content {
+	padding: 15px;
+	display: none;
+	position: absolute;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+}
+#content_box .current {
+	display: block;
+}
+/* Prescription */
+.search_input {
+	margin-right: 10px;
+}
+.result_list {
+	width: 100%;
+}
+.multi_meds td {
+	border-top: 1px dashed grey;
+}
+.result_list th {
+	padding: 5px;
+	color: white;
+	background: #7db9e8; /* Old browsers */
+	background: -moz-linear-gradient(top,  #7db9e8 0%, #1e5799 100%); /* FF3.6+ */
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#7db9e8), color-stop(100%,#1e5799)); /* Chrome,Safari4+ */
+	background: -webkit-linear-gradient(top,  #7db9e8 0%,#1e5799 100%); /* Chrome10+,Safari5.1+ */
+	background: -o-linear-gradient(top,  #7db9e8 0%,#1e5799 100%); /* Opera 11.10+ */
+	background: -ms-linear-gradient(top,  #7db9e8 0%,#1e5799 100%); /* IE10+ */
+	background: linear-gradient(to bottom,  #7db9e8 0%,#1e5799 100%); /* W3C */
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#7db9e8', endColorstr='#1e5799',GradientType=0 ); /* IE6-9 */
+}
+.result_list td {
+	padding: 15px 7px;
+	text-align: center;
+}
+.delete button {
+	width: 28px;
+	height: 28px;
+	padding: 0;
+	background: url("../images/red_x.png") no-repeat;
+	border: none;
+	cursor: pointer;
+}
+textarea[name=note] {
+	width: 100%;
+	box-sizing: border-box;
+	resize: vertical;
+}
+/* History */
