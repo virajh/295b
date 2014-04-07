@@ -6,9 +6,10 @@
 <form method="post">
 
 {{ form.as_p }}
-<fieldset name="Drugs prescribed">
+
 
 {% for drug in rxentry %}
+<fieldset name="Drugs prescribed">
 <li>
 {{ drug }}
 </li>

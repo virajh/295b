@@ -8,7 +8,7 @@ from django.http import HttpResponse
 from django.template import RequestContext
 
 from erx.models import Prescriber, Patient, Pharmacy, Prescription, RxEntry#, Rxnconso
-from erx.forms import PrescriberForm, PatientForm, PharmacyForm, PrescriptionForm, RxEntryForm
+from erx.forms import PrescriberForm, PatientForm, PharmacyForm, PrescriptionForm, RxEntryForm, ReadOnlyPrescriptionForm
 
 #Create your views here.
 
@@ -80,7 +80,15 @@ def handlePrescriber(request, prescriber_id):
 
 #prescriber home
 def prescriberHome(request):
-    return render_to_response('erx/prescriber_home.html', {'prescriber': Prescriber.objects.all()[0]},
+
+    prescriber = Prescriber.objects.all()[0]
+    my_profile = PrescriberForm(instance=prescriber)
+    my_patients = Patient.objects.filter(prescriber=prescriber)
+    my_prescriptions = Prescription.objects.filter(prescriber=prescriber)
+
+
+    return render_to_response('erx/prescriber_home.html', {'prescriber': prescriber, 'my_profile': my_profile,
+                                                           'my_patients': my_patients, 'my_prescriptions': my_prescriptions},
                               context_instance=RequestContext(request))
 #
 #End of Prescriber Methods
@@ -90,6 +98,26 @@ def prescriberHome(request):
 #
 #CRUD and Search methods for Patients
 #
+
+#Create new patient for prescriber
+def createPatientForPrescriber(request, p_id):
+
+    if request.method == "POST":
+       form = PatientForm(request.POST)
+
+       if form.is_valid():
+           form.save()
+           return render_to_response('erx/done.html', {'message': "Patient saved."}, context_instance=RequestContext(request))
+
+       else:
+           return render_to_response('erx/done.html', {'message': form.errors}, context_instance=RequestContext(request))
+
+    else:
+       if request.method == "GET":
+           prescriber = Prescriber.objects.get(prescriber_id = p_id)
+           patient = Patient(prescriber=prescriber)
+           form = PatientForm(instance=patient)
+           return render_to_response('erx/new_patient.html', {'form': form}, context_instance=RequestContext(request))
 
 #Create new patient
 def createPatient(request):
@@ -249,6 +277,34 @@ def handlePharmacy(request, pharmacy_id):
 #
 #CRUD & Search methods for Prescription
 #
+
+#create new prescription for prescriber
+def createPrescriptionForPrescriber(request, p_id):
+
+    if request.method == "POST":
+        form = PrescriptionForm(request.POST)
+
+        if form.is_valid():
+            instance=form.save()
+            rxentry = RxEntryForm(request.POST, instance=instance)
+            
+            if rxentry.is_valid():
+                rxentry.save()
+                return render_to_response('erx/done.html', {'message': "Prescription created."}, context_instance=RequestContext(request))
+
+            else:
+                return render_to_response('erx/done.html', {'message': rxentry.errors}, context_instance=RequestContext(request))
+
+        else:
+            return render_to_response('erx/done.html', {'message': form.errors}, context_instance=RequestContext(request))
+
+    else:
+        if request.method == "GET":
+            prescriber = Prescriber.objects.get(prescriber_id = p_id)
+            prescription = Prescription(prescriber=prescriber)
+            form = ReadOnlyPrescriptionForm(instance=prescription)
+            return render_to_response('erx/new_prescription.html', {'form': form, 'rxform': RxEntryForm}, context_instance=RequestContext(request))
+
 
 #create new prescription
 def createPrescription(request):

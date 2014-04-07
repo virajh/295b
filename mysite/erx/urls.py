@@ -11,6 +11,7 @@ urlpatterns = patterns('',
 
     url(r'^patient/$', views.getAllPatients, name='get_all_patients'),
     url(r'^patient/new/$', views.createPatient, name='new_patient'),
+    url(r'^patient/newForPrescriber/(?P<p_id>\w+)/$', views.createPatientForPrescriber, name='new_patient_for_prescriber'),
     url(r'^patient/prescriber/(?P<p_id>\w+)/$', views.getPatientByPrescriber, name='get_patient_by_prescriber'),
     url(r'^patient/(?P<patient_id>\w+)/$', views.handlePatient, name='handle_patient'),
 
@@ -20,6 +21,7 @@ urlpatterns = patterns('',
 
     url(r'^rx/$', views.getAllPrescription, name='get_all_prescription'),
     url(r'^rx/new/$', views.createPrescription, name='new_prescription'),
+    url(r'^rx/newForPrescriber/(?P<p_id>\w+)/$', views.createPrescriptionForPrescriber, name='new_prescription_for_prescriber'),
     url(r'^rx/(?P<rx_id>\w+)/$', views.handlePrescription, name='handle_prescription'),
     url(r'^rx/prescriber/(?P<p_id>\w+)/$', views.getPrescriptionByPrescriber, name='get_prescription_by_prescriber'),
     url(r'^rx/patient/(?P<p_id>\w+)/$', views.getPrescriptionByPatient, name='get_prescription_by_patient'),

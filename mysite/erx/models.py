@@ -159,7 +159,7 @@ class Prescription(models.Model):
     status = models.CharField('Status', max_length=20, choices=st_choices)
 
     def __unicode__(self):
-        return "%s %s %s "%(self.created_date, self.prescriber, self.patient)
+        return "%s %s: %s "%(self.created_date.date(), self.prescriber, self.patient)
 #
 #End of Prescription
 #

@@ -3,15 +3,9 @@
 
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<!--         <link href="{{ STATIC_URL }}css/sample.css" rel="stylesheet" type="text/css"/>
-       <script type="text/javascript" src="{{ STATIC_URL }}js/jquery-1.10.2.js"></script>
-        <script type="text/javascript" src="{{ STATIC_URL }}js/jquery-1.3.2.min.js"></script>
-        <script type="text/javascript" src="{{ STATIC_URL }}js/jquery-ui-1.10.4.custom.js"></script>
-        <script type="text/javascript" src="{{ STATIC_URL }}js/sprinkle.js"></script>
--->
-
-        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
-
+        <link href="{{ STATIC_URL }}css/manual.css" rel="stylesheet" type="text/css"/>
+        {% load url from future %}
+        <script type="text/javascript" src="{{ STATIC_URL }}js/jquery-1.10.2.js"></script>
         <script>
         	$(document).ready(function(){
 				$('ul.tabs').each(function(){
@@ -48,19 +42,53 @@
 
     <body>
         <h1>Welcome {{prescriber}}</h1>
+
         <ul class='tabs'>
-            <li><a href='#tab1'>Tab 1</a></li>
-            <li><a href='#tab2'>Tab 2</a></li>
-            <li><a href='#tab3'>Tab 3</a></li>
+            <li><a href='#tab1'>Patients</a></li>
+            <li><a href='#tab2'>Prescriptions</a></li>
+            <li><a href='#tab3'>Profile</a></li>
         </ul>
-        <div id='tab1'>
-            <p>Hi, this is the first tab.</p>
+
+        <div class='tabs' id='tab1'>
+            <p>Hi, this is the Patients tab.</p>
+
+            {% for patient in my_patients %}
+                <li>
+                    <a href="{% url 'erx:handle_patient' patient.patient_id %}">{{ patient }}</a>
+                </li>
+                <br><hr>
+            {% endfor %}
+            <br>
+            <a class='PrescriberHome' href="/erx/patient/newForPrescriber/{{ prescriber.prescriber_id }}">New Patient</a>
         </div>
-        <div id='tab2'>
-            <p>This is the 2nd tab.</p>
+
+        <div class='tabs' id='tab2'>
+            <p>This is the Prescriptions tab.</p>
+            {% for prescription in my_prescriptions %}
+            <li>
+            <a href="{% url 'erx:handle_prescription' prescription.rx_id %}">{{ prescription }}</a>
+            </li>
+            <br><hr>
+            {% endfor %}
+            <br>
+            <a class='PrescriberHome' href="/erx/rx/newForPrescriber/{{ prescriber.prescriber_id }}">New Prescription</a>
+
         </div>
-        <div id='tab3'>
-            <p>And this is the 3rd tab.</p>
+
+        <div class='tabs' id='tab3'>
+            <p>And this is the Profile tab.</p>
+
+            <table border="0" style="width:500px; border-spacing:5px; padding:5px;">
+                {% for field in my_profile %}
+                    <tr>
+                        <td>{{field.label}}</td>
+                        <td>{{field.value}}</td>
+                    </tr>
+                {% endfor %}
+            </table>
+            <br>
+            <a class='PrescriberHome' href="/erx/prescriber/{{ prescriber.prescriber_id }}">Modify</a>
+
         </div>
     </body>
 
