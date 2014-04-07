@@ -7,8 +7,9 @@ from django.views import generic
 from django.http import HttpResponse
 from django.template import RequestContext
 
-from erx.models import Prescriber, Patient, Pharmacy, Prescription, RxEntry#, Rxnconso
-from erx.forms import PrescriberForm, PatientForm, PharmacyForm, PrescriptionForm, RxEntryForm, ReadOnlyPrescriptionForm
+#from erx.models import Rxnconso
+from erx.models import Prescriber, Patient, Pharmacy, Prescription, RxEntry
+from erx.forms import PrescriberForm, PatientForm, PharmacyForm, PrescriptionForm, RxEntryForm, ReadOnlyPrescriptionForm, PatientMedHistForm
 
 #Create your views here.
 

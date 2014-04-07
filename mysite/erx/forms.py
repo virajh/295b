@@ -3,7 +3,7 @@ from django.db import models
 from django.forms import ModelForm
 from django.forms.models import inlineformset_factory
 
-from erx.models import Prescriber, Patient, Pharmacy, Prescription, RxEntry
+from erx.models import Prescriber, Patient, Pharmacy, Prescription, RxEntry, PatientMedicalHistory
 
 
 #Prescriber form
@@ -45,6 +45,11 @@ class ReadOnlyPrescriptionForm(ModelForm):
         readonly_fields=['prescriber']
 
 
+#PatientMedicalHistory form
+class PatientMedHistForm(ModelForm):
+
+    class Meta:
+        model = PatientMedicalHistory
 
 #RxEntry form
 RxEntryForm = inlineformset_factory(Prescription, RxEntry, can_delete=True, extra=1)

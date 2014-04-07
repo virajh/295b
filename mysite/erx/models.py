@@ -228,7 +228,7 @@ class LabHistory(models.Model):
 #
 class PatientMedicalHistory(models.Model):
 
-    patient_id = models.ForeignKey('Patient')
+    patient = models.OneToOneField(Patient)
     food_allergy = models.CharField(verbose_name='Known Food Allergies', max_length=4000, default='Enter CSV values')
     current_medications = models.CharField(verbose_name='Current Medications', max_length=4000, default='Enter CSV values')
     current_ailments = models.CharField(verbose_name='Current Ailments diagnosed', max_length=4000, default='Enter CSV values')
