@@ -1,36 +1,49 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!doctype html>
+<html lang="us">
 
-    <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-        <link href="{{ STATIC_URL }}css/manual.css" rel="stylesheet" type="text/css"/>
-        {% load url from future %}
-        <script type="text/javascript" src="{{ STATIC_URL }}js/jquery-1.10.2.js"></script>
-        <script type="text/javascript" src="{{ STATIC_URL }}js/jquery-ui-1.10.4.custom.js"></script>
-        <script>
-        $(function() {
-            $( "#accordion" ).accordion();
-        });
-        </script>        
-        <title>New Patient Page</title>
-        <h1>New Patient</h1><hr>
-        <p>Please enter new patient information below.</p><br>
-    </head>
+<head>
+	<meta charset="utf-8">
+	<title>Create patient</title>
+	<link href="{{ STATIC_URL }}css/manual.css" rel="stylesheet">
 
-    <body>
+    <style type="text/css">
+	    .TFtable{
+		    width:60%; 
+		    border-collapse:collapse; 
+	    }
+	    .TFtable td{ 
+		    padding:7px; border:#4e95f4 0px solid;
+	    }
+	    /* provide some minimal visual accomodation for IE8 and below */
+	    .TFtable tr{
+		    background: #b8d1f3;
+	    }
+	    /*  Define the background color for all the ODD background rows  */
+	    .TFtable tr:nth-child(odd){ 
+		    background: #b8d1f3;
+	    }
+	    /*  Define the background color for all the EVEN background rows  */
+	    .TFtable tr:nth-child(even){
+		    background: #dae5f4;
+	    }
+    </style>
 
-        <div id="accordion">
-            <h3>Section 1</h3>
-            <div>
-                <p>Accordion inside.</p>
-            </div>
-        </div>
-        <form action="." method="post">{% csrf_token %}
+</head>
 
-            {{ form.as_p }}
-        <input type="submit" value="Submit">
-        </form>
-    </body>
+<body>
+    <h1>Create new patient</h1>
+	<p>Please enter patient information below.</p>
 
-<br><br><hr><p>New patient page.</p>
+
+    <form method="post" action=".">{% csrf_token %}
+
+        <table class="TFtable">
+            {{form.as_table}}
+        </table>
+
+        <input type="submit" value="Submit" name="submit">
+        <input type="submit" value="Cancel" name="cancel">
+        <input type="submit" value="Reset" name="reset">
+    </form>
+</body>
 </html>

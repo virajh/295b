@@ -36,12 +36,12 @@ def prescriberPatient(request, p_id):
 
     patient = Patient.objects.get(patient_id=p_id)
     fields = list(PatientForm(instance=patient))
-    p_profile, p_contact = fields[1:9], fields[9:]
+    p_profile,p_med, p_contact = fields[1:7], fields[7:12],fields[12:]
     prescriptions = Prescription.objects.filter(patient=patient)
 
     labhist = LabHistoryForm(instance=LabHistory(patient=patient))
     return render_to_response('erx/prescriber_patient.html', {'patient': patient, 'p_contact': p_contact,
-                                                              'p_profile': p_profile, 'p_all': fields,
+                                                              'p_profile': p_profile, 'p_all': fields, 'p_med': p_med,
                                                               'prescriptions': prescriptions, 'p_lab_hist': labhist},
                               context_instance=RequestContext(request))
 
@@ -147,7 +147,14 @@ def createPatientForPrescriber(request, p_id):
            prescriber = Prescriber.objects.get(prescriber_id = p_id)
            patient = Patient(prescriber=prescriber)
            form = PatientForm(instance=patient)
-           return render_to_response('erx/new_patient.html', {'form': form}, context_instance=RequestContext(request))
+           fields = list(form)
+           p_basic = fields[1:7]
+           p_med = fields[7:12]
+           p_contact = fields[12:]
+           return render_to_response('erx/new_patient.html',
+                                     {'p_basic': p_basic, 'p_med': p_med,
+                                      'p_contact': p_contact, 'form': form},
+                                     context_instance=RequestContext(request))
 
 
 #Create new patient
