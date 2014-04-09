@@ -54,7 +54,7 @@
 
             {% for patient in my_patients %}
                 <li>
-                    <a href="{% url 'erx:handle_patient' patient.patient_id %}">{{ patient }}</a>
+                    <a href="{% url 'erx:prescriber_select_patient' patient.patient_id %}">{{ patient }}</a>
                 </li>
                 <br><hr>
             {% endfor %}

@@ -2,20 +2,49 @@ import sys, copy
 
 from django.forms.models import inlineformset_factory
 from django.forms.formsets import formset_factory
-from django.shortcuts import render_to_response, get_object_or_404
-from django.views import generic
 from django.http import HttpResponse
+from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
+from django.views import generic
 
+
+from erx.forms import PrescriberForm, PatientForm, PharmacyForm, PrescriptionForm, RxEntryForm, LabTestForm, LabHistoryForm
+from erx.models import Prescriber, Patient, Pharmacy, Prescription, RxEntry, LabTest, LabHistory
 #from erx.models import Rxnconso
-from erx.models import Prescriber, Patient, Pharmacy, Prescription, RxEntry
-from erx.forms import PrescriberForm, PatientForm, PharmacyForm, PrescriptionForm, RxEntryForm, ReadOnlyPrescriptionForm, PatientMedHistForm
 
 #Create your views here.
+
+def testView(request):
+
+    patient = Patient.objects.all()[0]
+    fields = list(PatientForm(instance=patient))
+    p_profile, p_contact = fields[1:9], fields[9:]
+    prescriptions = Prescription.objects.filter(patient=patient)
+#    my_patients = Patient.objects.filter(prescriber=prescriber)
+
+
+    return render_to_response('erx/prescriber_patient.html', {'patient': patient, 'p_contact': p_contact,
+                                                              'p_profile': p_profile, 'p_all': fields, 'prescriptions': prescriptions},
+                              context_instance=RequestContext(request))
 
 #
 #CRUD & Search methods for Prescriber
 #
+
+#prescriber patient view
+def prescriberPatient(request, p_id):
+
+    patient = Patient.objects.get(patient_id=p_id)
+    fields = list(PatientForm(instance=patient))
+    p_profile, p_contact = fields[1:9], fields[9:]
+    prescriptions = Prescription.objects.filter(patient=patient)
+    medhist = PatientMedHistForm(instance=PatientMedicalHistory(patient=patient))
+    labhist = LabHistoryForm(instance=LabHistory(patient=patient))
+    return render_to_response('erx/prescriber_patient.html', {'patient': patient, 'p_contact': p_contact,
+                                                              'p_profile': p_profile, 'p_all': fields,
+                                                              'prescriptions': prescriptions, 'p_med_hist': medhist, 'p_lab_hist': labhist},
+                              context_instance=RequestContext(request))
+
 
 #create new prescriber
 def createPrescriber(request):
@@ -119,6 +148,7 @@ def createPatientForPrescriber(request, p_id):
            patient = Patient(prescriber=prescriber)
            form = PatientForm(instance=patient)
            return render_to_response('erx/new_patient.html', {'form': form}, context_instance=RequestContext(request))
+
 
 #Create new patient
 def createPatient(request):
@@ -303,7 +333,7 @@ def createPrescriptionForPrescriber(request, p_id):
         if request.method == "GET":
             prescriber = Prescriber.objects.get(prescriber_id = p_id)
             prescription = Prescription(prescriber=prescriber)
-            form = ReadOnlyPrescriptionForm(instance=prescription)
+            form = PrescriptionForm(instance=prescription)
             return render_to_response('erx/new_prescription.html', {'form': form, 'rxform': RxEntryForm}, context_instance=RequestContext(request))
 
 

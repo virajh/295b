@@ -138,7 +138,7 @@ class Pharmacy(Contact):
 st_choices = (
     ('PENDING', 'Pending'),
     ('SUBMITTED', 'Submitted'),
-    ('Dispensed', 'Dispensed'),
+    ('DISPENSED', 'Dispensed'),
 )
 
 class Prescription(models.Model):
@@ -156,7 +156,7 @@ class Prescription(models.Model):
     last_modified = models.DateTimeField(auto_now=True)
     submitted_date = models.DateField(verbose_name='Date of Submission', default=time.strftime("%m/%d/%Y"))
 
-    status = models.CharField('Status', max_length=20, choices=st_choices)
+    status = models.CharField('Status', max_length=20, choices=st_choices, default='PENDING')
 
     def __unicode__(self):
         return "%s %s: %s "%(self.created_date.date(), self.prescriber, self.patient)
@@ -216,7 +216,7 @@ class LabHistory(models.Model):
     patient = models.ForeignKey('Patient')
     prescriber = models.ForeignKey('Prescriber')
     test_date = models.DateField(verbose_name='Date of Test', default='mm/dd/yyyy')
-    pmh = models.ForeignKey('PatientMedicalHistory')
+    pmh = models.ForeignKey('MedicalHistory')
 
 #
 #End of Lab History
@@ -226,7 +226,7 @@ class LabHistory(models.Model):
 #
 #Patient Medical History Object
 #
-class PatientMedicalHistory(models.Model):
+class MedicalHistory(models.Model):
 
     patient = models.OneToOneField(Patient)
     food_allergy = models.CharField(verbose_name='Known Food Allergies', max_length=4000, default='Enter CSV values')
