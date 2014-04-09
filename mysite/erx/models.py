@@ -79,27 +79,29 @@ gender_choices = (
 
 class Patient(Person, Contact):
 
+    date_added = models.DateTimeField(auto_now_add = True)
+    prescriber = models.ForeignKey(Prescriber)
+    patient_id = models.AutoField(primary_key=True)
     medical_id = models.CharField(verbose_name='Medical ID', unique=True, max_length=11,
                            validators=[RegexValidator(regex='^\d{3}-\d{2}-\d{4}$',
                                        message='Format has to be 123-45-6789',
                                        code='Invalid Medical ID')],
           default='xxx-xx-xxxx')
 
-    patient_id = models.AutoField(primary_key=True)
-
     birth_date = models.DateField(verbose_name='Date of Birth ', default='mm/dd/yyyy')
     gender = models.CharField(verbose_name='Gender', max_length=20, choices=gender_choices)
+
+    food_allergy = models.CharField(verbose_name='Known Food Allergies', max_length=4000, default='Enter CSV values')
+    current_medications = models.CharField(verbose_name='Current Medications', max_length=4000, default='Enter CSV values')
+    current_ailments = models.CharField(verbose_name='Current Ailments diagnosed', max_length=4000, default='Enter CSV values')
     weight = models.CharField(verbose_name='Weight (in lbs)', max_length=20)
     height = models.CharField(verbose_name='Height (in cm)', max_length=20) 
-    date_added = models.DateTimeField(auto_now_add = True)
 
     em_contact_name = models.CharField(verbose_name='Emergency Contact Name', max_length=100)
     em_contact_phone = models.CharField(verbose_name='Emergency Contact Telephone', max_length=12, unique=True, default = 'xxx-xxx-xxxx',
                                  validators=[RegexValidator(regex='^\d{3}-\d{3}-\d{4}$',
                                              message='Telephone number should be 10 digits xxx-xxx-xxxx',
                                              code='Invalid Telephone')])
-
-    prescriber = models.ForeignKey(Prescriber)
 
     def __unicode__(self):
         if self.middle_name:
@@ -229,9 +231,9 @@ class LabHistory(models.Model):
 class MedicalHistory(models.Model):
 
     patient = models.OneToOneField(Patient)
-    food_allergy = models.CharField(verbose_name='Known Food Allergies', max_length=4000, default='Enter CSV values')
-    current_medications = models.CharField(verbose_name='Current Medications', max_length=4000, default='Enter CSV values')
-    current_ailments = models.CharField(verbose_name='Current Ailments diagnosed', max_length=4000, default='Enter CSV values')
+#    food_allergy = models.CharField(verbose_name='Known Food Allergies', max_length=4000, default='Enter CSV values')
+#    current_medications = models.CharField(verbose_name='Current Medications', max_length=4000, default='Enter CSV values')
+#    current_ailments = models.CharField(verbose_name='Current Ailments diagnosed', max_length=4000, default='Enter CSV values')
     
 #
 #End of Patient Medical History

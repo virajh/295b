@@ -21,8 +21,9 @@ class PatientForm(ModelForm):
     class Meta:
         model = Patient
         fields = ['prescriber', 'medical_id', 'first_name', 'middle_name', 'last_name', 'gender',
-                  'birth_date', 'weight', 'height', 'street_address', 'city', 'state', 'zipcode',
-                  'telephone', 'email', 'em_contact_name', 'em_contact_phone']
+                  'birth_date', 'food_allergy', 'current_medications', 'current_ailments', 'weight',
+                  'height', 'street_address', 'city', 'state', 'zipcode', 'telephone', 'email',
+                  'em_contact_name', 'em_contact_phone']
 
 
 #Pharmacy form

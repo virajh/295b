@@ -38,11 +38,11 @@ def prescriberPatient(request, p_id):
     fields = list(PatientForm(instance=patient))
     p_profile, p_contact = fields[1:9], fields[9:]
     prescriptions = Prescription.objects.filter(patient=patient)
-    medhist = PatientMedHistForm(instance=PatientMedicalHistory(patient=patient))
+
     labhist = LabHistoryForm(instance=LabHistory(patient=patient))
     return render_to_response('erx/prescriber_patient.html', {'patient': patient, 'p_contact': p_contact,
                                                               'p_profile': p_profile, 'p_all': fields,
-                                                              'prescriptions': prescriptions, 'p_med_hist': medhist, 'p_lab_hist': labhist},
+                                                              'prescriptions': prescriptions, 'p_lab_hist': labhist},
                               context_instance=RequestContext(request))
 
 

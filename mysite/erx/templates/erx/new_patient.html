@@ -1,13 +1,36 @@
-<html>
-<h1>New Patient</h1><hr>
-<p>Please enter new patient information below.</p><br>
-<body>
-<form action="." method="post">{% csrf_token %}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 
-{{ form.as_p }}
-<input type="submit" value="Submit">
-</form>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <link href="{{ STATIC_URL }}css/manual.css" rel="stylesheet" type="text/css"/>
+        {% load url from future %}
+        <script type="text/javascript" src="{{ STATIC_URL }}js/jquery-1.10.2.js"></script>
+        <script type="text/javascript" src="{{ STATIC_URL }}js/jquery-ui-1.10.4.custom.js"></script>
+        <script>
+        $(function() {
+            $( "#accordion" ).accordion();
+        });
+        </script>        
+        <title>New Patient Page</title>
+        <h1>New Patient</h1><hr>
+        <p>Please enter new patient information below.</p><br>
+    </head>
+
+    <body>
+
+        <div id="accordion">
+            <h3>Section 1</h3>
+            <div>
+                <p>Accordion inside.</p>
+            </div>
+        </div>
+        <form action="." method="post">{% csrf_token %}
+
+            {{ form.as_p }}
+        <input type="submit" value="Submit">
+        </form>
+    </body>
 
 <br><br><hr><p>New patient page.</p>
-</body></html>
-
+</html>
