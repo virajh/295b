@@ -1,0 +1,91 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <link href="{{ STATIC_URL }}css/manual.css" rel="stylesheet" type="text/css"/>
+        {% load url from future %}
+        <script type="text/javascript" src="{{ STATIC_URL }}js/jquery-1.10.2.js"></script>
+        <script>
+        	$(document).ready(function(){
+				$('ul.tabs').each(function(){
+					var $active, $content, $links = $(this).find('a');
+
+					$active = $($links.filter('[href="'+location.hash+'"]')[0] || $links[0]);
+					$active.addClass('active');
+
+					$content = $($active[0].hash);
+
+					$links.not($active).each(function () {
+						$(this.hash).hide();
+					});
+
+					$(this).on('click', 'a', function(e){
+						$active.removeClass('active');
+						$content.hide();
+
+						$active = $(this);
+						$content = $(this.hash);
+
+						$active.addClass('active');
+						$content.show();
+
+						e.preventDefault();
+					});
+				});
+			});
+
+        </script>
+        
+        <title>Pharmacy Home</title>
+    </head>
+
+    <body>
+        <h1>{{pharmacy}}</h1>
+
+        <ul class='tabs'>
+            <li><a href='#tab1'>Outstanding Prescriptions</a></li>
+            <li><a href='#tab2'>Archived Prescriptions</a></li>
+            <li><a href='#tab3'>Profile</a></li>
+        </ul>
+
+        <div class='tabs' id='tab1'>
+            <p>These are outstanding Prescriptions.</p>
+            {% for prescription in new_p %}
+            <li>
+            <a href="{% url 'erx:dispense_prescription' prescription.rx_id %}">{{ prescription }}</a>
+            </li>
+            <br><hr>
+            {% endfor %}
+            <br>
+        </div>
+
+        <div class='tabs' id='tab2'>
+            <p>Prescriptions that were dispensed.</p>
+            {% for prescription in old_p %}
+            <li>
+            <a href="{% url 'erx:old_prescription' prescription.rx_id %}">{{ prescription }}</a>
+            </li>
+            <br><hr>
+            {% endfor %}
+            <br>
+        </div>
+
+        <div class='tabs' id='tab3'>
+            <p>And this is the Profile tab.</p>
+
+            <table border="0" style="width:500px; border-spacing:5px; padding:5px;">
+                {% for field in my_profile %}
+                    <tr>
+                        <td><p>{{field.label}}</p></td>
+                        <td><p>{{field.value}}</p></td>
+                    </tr>
+                {% endfor %}
+            </table>
+            <br>
+            <a class='PrescriberHome' href="/erx/pharmacy/{{ pharmacy.pharmacy_id }}">Modify</a>
+        </div>
+    </body>
+
+<br><br><hr><p>Pharmacy home page.</p>
+</html>

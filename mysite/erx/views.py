@@ -253,6 +253,19 @@ def getPatientByPrescriber(request, p_id):
 #
 #Pharmacy CRUD & Search Methods
 #
+  
+
+#pharmacy home
+def pharmacyHome(request):
+
+    pharmacy = Pharmacy.objects.all()[0]
+    my_profile = PharmacyForm(instance=pharmacy)
+    new_p = Prescription.objects.filter(pharmacy=pharmacy, status="SUBMITTED")
+    old_p = Prescription.objects.filter(pharmacy=pharmacy, status="DISPENSED")
+
+    return render_to_response('erx/pharmacy_home.html', {'pharmacy': pharmacy, 'my_profile': my_profile,
+                                                         'new_p': new_p, 'old_p': old_p},
+                              context_instance=RequestContext(request))
 
 #Create pharmacy
 def createPharmacy(request):
@@ -314,6 +327,51 @@ def handlePharmacy(request, pharmacy_id):
                 except Exception as e:
                     return render_to_response('erx/done.html', {'message': e},
                         context_instance=RequestContext(request))
+
+#dispense prescriptions
+def dispenseRx(request, p_id):
+
+    if request.method == 'GET':
+        rx = get_object_or_404(Prescription, rx_id=p_id)
+        form = PrescriptionForm(instance=rx)
+        fields = list(form)
+        fields.pop(0)
+        fields.pop(0)
+        fields.pop(0)
+        fields.pop(3)
+        form2 = dict()
+        form2['Patient'] = rx.patient.__unicode__()
+        form2['Prescriber'] = rx.prescriber.__unicode__()
+        form2['Pharmacy'] = rx.pharmacy.__unicode__()        
+
+        RxEntryForm= inlineformset_factory(Prescription, RxEntry, can_delete=True, extra=0)
+        rxforms = RxEntryForm(instance=rx)
+        date_created = rx.created_date
+        date_modified = rx.last_modified
+        return render_to_response('erx/dispense_prescription.html', {'date_created': date_created,
+                                                                'date_modified': date_modified, 'form': form2,
+                                                                'fields': fields, 'rxform': rxforms},
+            context_instance=RequestContext(request))
+    else:
+        if request.method == 'POST':
+            if request.POST['status'] == 'DISPENSED':
+                rx = get_object_or_404(Prescription, rx_id=p_id)
+                rx.status="DISPENSED"
+                form = PrescriptionForm(instance=rx)
+                if form.is_valid():
+                    form.save()
+                    return render_to_response('erx/done.html', {'message': 'Prescription %s dispensed.' % (rx)},
+                                                  context_instance=RequestContext(request))
+                else:
+                    for field in form:
+                        print field.errors
+                    print form.errors
+                    print form.non_field_errors()
+#                else:
+#                    x = form.non_field_errors()
+#                    print form.non_field_errors()
+#                    return render_to_response('erx/done.html', {'message': 'Prescription %s not saved.\nErrors: %s ' % (rx, x)},
+#                                              context_instance=RequestContext(request))
 #
 #End of Pharmacy methods
 #
@@ -413,6 +471,31 @@ def getAllPrescription(request):
             context_instance=RequestContext(request))
     else:
         return render_to_response('erx/done.html', {'message': 'Not allowed.'},
+            context_instance=RequestContext(request))
+
+
+#get dispensed prescription
+def getDispensedRx(request, p_id):
+
+    if request.method == 'GET':
+        rx = get_object_or_404(Prescription, rx_id=p_id)
+        form = PrescriptionForm(instance=rx)
+        fields = list(form)
+        fields.pop(0)
+        fields.pop(0)
+        fields.pop(0)
+        form2 = dict()
+        form2['Patient'] = rx.patient.__unicode__()
+        form2['Prescriber'] = rx.prescriber.__unicode__()
+        form2['Pharmacy'] = rx.pharmacy.__unicode__()        
+
+        RxEntryForm= inlineformset_factory(Prescription, RxEntry, can_delete=True, extra=0)
+        rxforms = RxEntryForm(instance=rx)
+        date_created = rx.created_date
+        date_modified = rx.last_modified
+        return render_to_response('erx/old_prescription.html', {'date_created': date_created,
+                                                                'date_modified': date_modified, 'form': form2,
+                                                                'fields': fields, 'rxform': rxforms},
             context_instance=RequestContext(request))
 
 

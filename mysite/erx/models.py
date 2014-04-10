@@ -146,12 +146,12 @@ st_choices = (
 class Prescription(models.Model):
 
     rx_id = models.AutoField(primary_key=True)
+
     prescriber = models.ForeignKey(Prescriber)
-
     patient = models.ForeignKey(Patient)
-    sp_instructions = models.CharField(verbose_name='Special Instructions', max_length=2000, blank=True)
-
     pharmacy = models.ForeignKey(Pharmacy)
+
+    sp_instructions = models.CharField(verbose_name='Special Instructions', max_length=2000, blank=True)
     note = models.CharField(verbose_name='Note to Pharmacy', max_length=2000, blank=True)
 
     created_date = models.DateTimeField(auto_now_add = True)

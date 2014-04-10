@@ -1,0 +1,68 @@
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <link href="{{ STATIC_URL }}css/manual.css" rel="stylesheet" type="text/css" media="screen" />
+{{ rxform.media }}
+
+        <title>Dispense Prescription</title>
+</head>
+
+<h1>Prescription</h1><hr>
+<p>Please find prescription information below.</p><br>
+
+<body>
+    <form action="" method="post">{% csrf_token %}
+
+        {% for key, value in form.viewitems %}
+            <p>{{ key }}: {{ value }}</p>
+        {% endfor %}
+
+        <p><label for="id_status">Status:</label> 
+            <select id="id_status" name="status">
+                <option value="SUBMITTED">Submitted</option>
+                <option value="DISPENSED">Dispensed</option>
+            </select>
+        </p>
+
+        {% for field in fields %}
+        <p>{{ field.label }}: {{field.value}}</p>
+        {% endfor %}
+
+        <p>Date Created: {{ date_created }}</p>
+        <p>Last Modified: {{ date_modified }}</p>
+        <h3>Drugs:</h3>
+        <table class="TFtable" id="id_drugs_table" border="0" cellpadding="0" cellspacing="5">
+            <thead>
+                <tr>
+                    <th scope="col">Drug & Concentration</th>
+                    <th scope="col">Schedule</th>
+                    <th scope="col">Quantity</th>
+                    <th scope="col">Substitutions</th>
+                    <th scope="col">Refills</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for form in rxform.forms %}
+                <tr id="{{ form.prefix }}-row">
+                    <td>
+                        {{ form.drug_name.value }}
+                    </td>
+                    <td>{{ form.drug_schedule.value }}</td>
+                    <td>{{ form.drug_quantity.value }}</td>
+                    <td>{{ form.drug_substitution.value }}</td>
+                    <td>{{ form.refills.value }}</td>
+                {% endfor %}
+            </tbody>
+        </table>
+        {{ rxform.management_form }}
+        <input type="submit" value="Update" name="update">
+<!--        <input type="submit" value="Delete" name="delete"> -->
+        <input type="button" value="Cancel" onClick="history.go(-1);return true;">
+        <input type="reset" value="Clear">
+    </form>
+
+<br>
+<hr>
+<p>Dispense Prescription page.</p>
+</body>
+</html>
