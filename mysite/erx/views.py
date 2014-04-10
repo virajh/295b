@@ -82,8 +82,9 @@ def handlePrescriber(request, prescriber_id):
     if request.method == 'GET':
         prescriber = get_object_or_404(Prescriber, prescriber_id=prescriber_id)
         form = PrescriberForm(instance=prescriber)
-        return render_to_response('erx/form.html', {'message': 'Prescriber found',
-                                                    'form': form},
+        fields = list(form)
+        p_basic, p_contact = fields[:5], fields[5:]
+        return render_to_response('erx/new_prescriber.html', {'prescriber': prescriber, 'p_basic': p_basic, 'p_contact': p_contact},
             context_instance=RequestContext(request))
 
     if request.method == 'POST':
@@ -98,6 +99,7 @@ def handlePrescriber(request, prescriber_id):
             else:
                 return render_to_response('erx/done.html', {'message': 'Prescriber %s not saved.\nErrors: %s ' % (prescriber, form.errors)},
                     context_instance=RequestContext(request))
+
         else:
             if 'delete' in request.POST:
                 try:
@@ -148,7 +150,7 @@ def createPatientForPrescriber(request, p_id):
            patient = Patient(prescriber=prescriber)
            form = PatientForm(instance=patient)
            fields = list(form)
-           p_basic = fields[1:7]
+           p_basic = fields[:7]
            p_med = fields[7:12]
            p_contact = fields[12:]
            return render_to_response('erx/new_patient.html',
@@ -191,11 +193,16 @@ def getAllPatients(request):
 def handlePatient(request, patient_id):
 
     if request.method == 'GET':
-        patient = get_object_or_404(Patient, patient_id=patient_id)
-        form = PatientForm(instance=patient)
-        return render_to_response('erx/form.html', {'message': 'Patient found',
-                                                    'form': form},
-            context_instance=RequestContext(request))
+           patient = get_object_or_404(Patient, patient_id=patient_id)
+           form = PatientForm(instance=patient)
+           fields = list(form)
+           p_basic = fields[:7]
+           p_med = fields[7:12]
+           p_contact = fields[12:]
+           return render_to_response('erx/update_patient.html',
+                                     {'p_basic': p_basic, 'p_med': p_med,
+                                      'p_contact': p_contact, 'form': form},
+                                     context_instance=RequestContext(request))
 
     if request.method == 'POST':
 
@@ -316,6 +323,33 @@ def handlePharmacy(request, pharmacy_id):
 #CRUD & Search methods for Prescription
 #
 
+#create new prescription for patient
+def createPrescriptionForPatient(request, p_id):
+
+    if request.method == "POST":
+        form = PrescriptionForm(request.POST)
+
+        if form.is_valid():
+            instance=form.save()
+            rxentry = RxEntryForm(request.POST, instance=instance)
+            
+            if rxentry.is_valid():
+                rxentry.save()
+                return render_to_response('erx/done.html', {'message': "Prescription created."}, context_instance=RequestContext(request))
+
+            else:
+                return render_to_response('erx/done.html', {'message': rxentry.errors}, context_instance=RequestContext(request))
+
+        else:
+            return render_to_response('erx/done.html', {'message': form.errors}, context_instance=RequestContext(request))
+
+    else:
+        if request.method == "GET":
+            patient = Patient.objects.get(patient_id = p_id)
+            prescription = Prescription(patient=patient, prescriber=patient.prescriber)
+            form = PrescriptionForm(instance=prescription)
+            return render_to_response('erx/new_prescription.html', {'form': form, 'rxform': RxEntryForm}, context_instance=RequestContext(request))
+
 #create new prescription for prescriber
 def createPrescriptionForPrescriber(request, p_id):
 
@@ -390,9 +424,11 @@ def handlePrescription(request, rx_id):
 
         form = PrescriptionForm(instance=rx)
         rxforms = RxEntryForm(instance=rx)
-
-        return render_to_response('erx/cur_prescription.html', {'message': 'Prescription found',
-                                                    'form': form, 'rxform': rxforms},
+        date_created = rx.created_date
+        date_modified = rx.last_modified
+        return render_to_response('erx/cur_prescription.html', {'date_created': date_created,
+                                                                'date_modified': date_modified,
+                                                                'form': form, 'rxform': rxforms},
             context_instance=RequestContext(request))
 
     if request.method == 'POST':

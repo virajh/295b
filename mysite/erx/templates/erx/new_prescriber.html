@@ -38,15 +38,14 @@
 			});
         </script>
         
-        <title>Create Patient View</title>
+        <title>Create Prescriber View</title>
     </head>
 
     <body>
-        <h1>{{patient}}</h1>
+        <h1>Prescriber: {{prescriber}}</h1>
 
         <ul class='tabs'>
-            <li><a href='#tab1'>Profile</a></li>
-            <li><a href='#tab3'>Medical History</a></li>
+            <li><a href='#tab1'>Basic Profile</a></li>
             <li><a href='#tab5'>Contact Information</a></li>
         </ul>
 
@@ -57,26 +56,12 @@
                 <table border="0" style="width:500px; border-spacing:5px; padding:5px;">
                     {% for field in p_basic %}
                         <tr>
-                            <td>{{field.label}}:</td>
-                            <td>{{field}}</td>
+                            <td><p>{{field.label}}:</p></td>
+                            <td><p>{{field}}</p></td>
                         </tr>
                     {% endfor %}
                 </table>
             </div>
-
-            <div class='tabs' id='tab3'>
-                <p>And this is the Medical History tab.</p>
-
-                <table border="0" style="width:500px; border-spacing:5px; padding:5px;">
-                    {% for field in p_med %}
-                        <tr>
-                            <td>{{field.label}}:</td>
-                            <td>{{field}}</td>                        
-                        </tr>
-                    {% endfor %}
-                </table>
-            </div>
-
 
             <div class='tabs' id='tab5'>
                 <p>And this is the Contact Information tab.</p>
@@ -84,17 +69,17 @@
                 <table border="0" style="width:500px; border-spacing:5px; padding:5px;">
                     {% for field in p_contact %}
                         <tr>
-                            <td>{{field.label}}:</td>
-                            <td>{{field}}</td>
+                            <td><p>{{field.label}}:</p></td>
+                            <td><p>{{field}}</p></td>
                         </tr>
                     {% endfor %}
                 </table>
             </div>
             <input type="submit" value="Submit" name="submit">
             <input type="button" value="Cancel" onClick="history.go(-1);return true;">
-            <input type="reset" value="Clear">
+            <input type="reset" value="Restore">
         </form>
     </body>
 
-<br><br><hr><p>New Patient page.</p>
+<br><br><hr><p>New Prescriber page.</p>
 </html>

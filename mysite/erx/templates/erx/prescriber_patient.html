@@ -41,7 +41,7 @@
     </head>
 
     <body>
-        <h1>{{patient}}</h1>
+        <h1>Patient: {{patient}}</h1>
 
         <ul class='tabs'>
             <li><a href='#tab1'>Profile</a></li>
@@ -57,11 +57,12 @@
             <table border="0" style="width:500px; border-spacing:5px; padding:5px;">
                 {% for field in p_profile %}
                     <tr>
-                        <td>{{field.label}}</td>
-                        <td>{{field.value}}</td>
+                        <td><p>{{field.label}}</p></td>
+                        <td><p>{{field.value}}</p></td>
                     </tr>
                 {% endfor %}
             </table>
+            <a class='PrescriberHome' href="/erx/patient/{{patient.patient_id }}">Update Profile</a>
         </div>
 
         <div class='tabs' id='tab2'>
@@ -74,6 +75,7 @@
                     </tr>
                 {% endfor %}
             </table>
+            <a class='PrescriberHome' href="/erx/rx/newForPatient/{{patient.patient_id }}">New Prescription</a>
         </div>
 
         <div class='tabs' id='tab3'>
@@ -82,13 +84,12 @@
             <table border="0" style="width:500px; border-spacing:5px; padding:5px;">
                 {% for field in p_med %}
                     <tr>
-                        <td>{{field.label}}</td>
-                        <td>{{field.value}}</td>                        
+                        <td><p>{{field.label}}</p></td>
+                        <td><p>{{field.value}}</p></td>                        
                     </tr>
                 {% endfor %}
             </table>
-
-
+            <a class='PrescriberHome' href="/erx/patient/{{patient.patient_id }}">Update Profile</a>
         </div>
 
         <div class='tabs' id='tab4'>
@@ -97,8 +98,8 @@
             <table border="0" style="width:500px; border-spacing:5px; padding:5px;">
                 {% for field in p_lab_hist %}
                     <tr>
-                        <td>{{field.label}}</td>
-                        <td>{{field.value}}</td>                        
+                        <td><p>{{field.label}}</p></td>
+                        <td><p>{{field.value}}</p></td>                        
                     </tr>
                 {% endfor %}
             </table>
@@ -110,11 +111,12 @@
             <table border="0" style="width:500px; border-spacing:5px; padding:5px;">
                 {% for field in p_contact %}
                     <tr>
-                        <td>{{field.label}}</td>
-                        <td>{{field.value}}</td>
+                        <td><p>{{field.label}}</p></td>
+                        <td><p>{{field.value}}</p></td>
                     </tr>
                 {% endfor %}
             </table>
+            <a class='PrescriberHome' href="/erx/patient/{{patient.patient_id }}">Update Profile</a>
         </div>
 
     </body>

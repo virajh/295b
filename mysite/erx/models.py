@@ -91,9 +91,9 @@ class Patient(Person, Contact):
     birth_date = models.DateField(verbose_name='Date of Birth ', default='mm/dd/yyyy')
     gender = models.CharField(verbose_name='Gender', max_length=20, choices=gender_choices)
 
-    food_allergy = models.CharField(verbose_name='Known Food Allergies', max_length=4000, default='Enter CSV values')
-    current_medications = models.CharField(verbose_name='Current Medications', max_length=4000, default='Enter CSV values')
-    current_ailments = models.CharField(verbose_name='Current Ailments diagnosed', max_length=4000, default='Enter CSV values')
+    food_allergy = models.CharField(verbose_name='Known Food Allergies', max_length=4000, help_text='Enter CSV values', blank=True)
+    current_medications = models.CharField(verbose_name='Current Medications', max_length=4000, help_text='Enter CSV values', blank=True)
+    current_ailments = models.CharField(verbose_name='Current Ailments diagnosed', max_length=4000, blank=True)
     weight = models.CharField(verbose_name='Weight (in lbs)', max_length=20)
     height = models.CharField(verbose_name='Height (in cm)', max_length=20) 
 
