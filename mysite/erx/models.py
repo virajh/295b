@@ -162,6 +162,11 @@ class Prescription(models.Model):
 
     def __unicode__(self):
         return "%s %s: %s "%(self.created_date.date(), self.prescriber, self.patient)
+
+    def dispense(self):
+        self.status = st_choices[2][0]
+        return self
+
 #
 #End of Prescription
 #
@@ -180,6 +185,7 @@ refill_choices = (
 class RxEntry(models.Model):
 
     drug_name = models.CharField(verbose_name='Drug with concentration', max_length=200)
+    drug_form = models.CharField(verbose_name='Drug Form', max_length=50)
     drug_schedule = models.CharField(verbose_name='Dosage Instructions', max_length=2000)    
     drug_quantity = models.CharField(verbose_name='Dosage Amount', max_length=2000)
     drug_substitution = models.BooleanField(verbose_name='Substitution allowed?')

@@ -11,18 +11,10 @@
 <p>Please find prescription information below.</p><br>
 
 <body>
-    <form action="" method="post">{% csrf_token %}
 
         {% for key, value in form.viewitems %}
             <p>{{ key }}: {{ value }}</p>
         {% endfor %}
-
-        <p><label for="id_status">Status:</label> 
-            <select id="id_status" name="status">
-                <option value="SUBMITTED">Submitted</option>
-                <option value="DISPENSED">Dispensed</option>
-            </select>
-        </p>
 
         {% for field in fields %}
         <p>{{ field.label }}: {{field.value}}</p>
@@ -35,6 +27,7 @@
             <thead>
                 <tr>
                     <th scope="col">Drug & Concentration</th>
+                    <th scope="col">Form</th>
                     <th scope="col">Schedule</th>
                     <th scope="col">Quantity</th>
                     <th scope="col">Substitutions</th>
@@ -47,6 +40,7 @@
                     <td>
                         {{ form.drug_name.value }}
                     </td>
+                    <td>{{ form.drug_form.value }}</td>
                     <td>{{ form.drug_schedule.value }}</td>
                     <td>{{ form.drug_quantity.value }}</td>
                     <td>{{ form.drug_substitution.value }}</td>
@@ -55,13 +49,16 @@
             </tbody>
         </table>
         {{ rxform.management_form }}
-        <input type="submit" value="Update" name="update">
-<!--        <input type="submit" value="Delete" name="delete"> -->
-        <input type="button" value="Cancel" onClick="history.go(-1);return true;">
-        <input type="reset" value="Clear">
-    </form>
 
-<br>
+        <a class='PrescriberHome' href="/erx/pharmacy/dispense/{{ rx_id }}">Dispense</a>
+
+        <form action='/erx/pharmacy/dispense/{{rx_id}}' method='post'>{%csrf_token%}
+            <input type='hidden' name='rx_id' value="{{rx_id}}">
+            <input type="submit" value="Dispense" name="dispense">
+            <input type="button" value="Cancel" onClick="history.go(-1);return true;">
+        </form>
+
+<br><br>
 <hr>
 <p>Dispense Prescription page.</p>
 </body>

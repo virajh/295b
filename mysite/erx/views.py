@@ -89,26 +89,26 @@ def handlePrescriber(request, prescriber_id):
 
     if request.method == 'POST':
 
-        if 'update' in request.POST:
-            prescriber = get_object_or_404(Prescriber, prescriber_id=prescriber_id)
-            form = PrescriberForm(request.POST, instance=prescriber)
-            if form.is_valid():
-                form.save()
-                return render_to_response('erx/done.html', {'message': 'Prescriber %s saved.' % (prescriber)},
-                    context_instance=RequestContext(request))
-            else:
-                return render_to_response('erx/done.html', {'message': 'Prescriber %s not saved.\nErrors: %s ' % (prescriber, form.errors)},
-                    context_instance=RequestContext(request))
-
+#        if 'update' in request.POST:
+        prescriber = get_object_or_404(Prescriber, prescriber_id=prescriber_id)
+        form = PrescriberForm(request.POST, instance=prescriber)
+        if form.is_valid():
+            form.save()
+            return render_to_response('erx/done.html', {'message': 'Prescriber %s saved.' % (prescriber)},
+                context_instance=RequestContext(request))
         else:
-            if 'delete' in request.POST:
-                try:
-                    Prescriber.objects.filter(prescriber_id=prescriber_id).delete()
-                    return render_to_response('erx/done.html', {'message': 'Prescriber %s deleted.' % (prescriber_id)},
-                        context_instance=RequestContext(request))
-                except Exception as e:
-                    return render_to_response('erx/done.html', {'message': e},
-                        context_instance=RequestContext(request))
+            return render_to_response('erx/done.html', {'message': 'Prescriber %s not saved.\nErrors: %s ' % (prescriber, form.errors)},
+                context_instance=RequestContext(request))
+
+#        else:
+#            if 'delete' in request.POST:
+#                try:
+#                    Prescriber.objects.filter(prescriber_id=prescriber_id).delete()
+#                    return render_to_response('erx/done.html', {'message': 'Prescriber %s deleted.' % (prescriber_id)},
+#                        context_instance=RequestContext(request))
+#                except Exception as e:
+#                    return render_to_response('erx/done.html', {'message': e},
+#                        context_instance=RequestContext(request))
 
 #prescriber home
 def prescriberHome(request):
@@ -216,6 +216,7 @@ def handlePatient(request, patient_id):
             else:
                 return render_to_response('erx/done.html', {'message': 'Patient %s not saved.\nErrors: %s ' % (patient, form.errors)},
                     context_instance=RequestContext(request))
+
         else:
             if 'delete' in request.POST:
                 try:
@@ -303,34 +304,35 @@ def handlePharmacy(request, pharmacy_id):
     if request.method == 'GET':
         pharmacy = get_object_or_404(Pharmacy, pharmacy_id=pharmacy_id)
         form = PharmacyForm(instance=pharmacy)
-        return render_to_response('erx/form.html', {'message': 'Pharmacy found',
-                                                    'form': form},
+        return render_to_response('erx/new_pharmacy.html', {'form': form},
             context_instance=RequestContext(request))
 
     if request.method == 'POST':
-        if 'update' in request.POST:
-            pharmacy = get_object_or_404(Pharmacy, pharmacy_id=pharmacy_id)
-            form = PharmacyForm(request.POST, instance=pharmacy)
-            if form.is_valid():
-                form.save()
-                return render_to_response('erx/done.html', {'message': 'Pharmacy %s saved.' % (pharmacy)},
-                    context_instance=RequestContext(request))
-            else:
-                return render_to_response('erx/done.html', {'message': 'Pharmacy %s not saved.\nErrors: %s ' % (pharmacy, form.errors)},
-                    context_instance=RequestContext(request))
-        else:#to do
-            if 'delete' in request.POST:
-                try:
-                    Pharmacy.objects.filter(pharmacy_id=pharmacy_id).delete()
-                    return render_to_response('erx/done.html', {'message': 'Pharmacy deleted.'},
-                        context_instance=RequestContext(request))
-                except Exception as e:
-                    return render_to_response('erx/done.html', {'message': e},
-                        context_instance=RequestContext(request))
+
+#        if 'update' in request.POST:
+        pharmacy = get_object_or_404(Pharmacy, pharmacy_id=pharmacy_id)
+        form = PharmacyForm(request.POST, instance=pharmacy)
+        if form.is_valid():
+            form.save()
+            return render_to_response('erx/done.html', {'message': 'Pharmacy %s saved.' % (pharmacy)},
+                context_instance=RequestContext(request))
+        else:
+            return render_to_response('erx/done.html', {'message': 'Pharmacy %s not saved.\nErrors: %s ' % (pharmacy, form.errors)},
+                context_instance=RequestContext(request))
+
+#        else:#to do
+#            if 'delete' in request.POST:
+#                try:
+#                    Pharmacy.objects.filter(pharmacy_id=pharmacy_id).delete()
+#                    return render_to_response('erx/done.html', {'message': 'Pharmacy deleted.'},
+#                        context_instance=RequestContext(request))
+#                except Exception as e:
+#                    return render_to_response('erx/done.html', {'message': e},
+#                        context_instance=RequestContext(request))
 
 #dispense prescriptions
 def dispenseRx(request, p_id):
-
+#TO DO
     if request.method == 'GET':
         rx = get_object_or_404(Prescription, rx_id=p_id)
         form = PrescriptionForm(instance=rx)
@@ -338,7 +340,7 @@ def dispenseRx(request, p_id):
         fields.pop(0)
         fields.pop(0)
         fields.pop(0)
-        fields.pop(3)
+
         form2 = dict()
         form2['Patient'] = rx.patient.__unicode__()
         form2['Prescriber'] = rx.prescriber.__unicode__()
@@ -348,30 +350,35 @@ def dispenseRx(request, p_id):
         rxforms = RxEntryForm(instance=rx)
         date_created = rx.created_date
         date_modified = rx.last_modified
-        return render_to_response('erx/dispense_prescription.html', {'date_created': date_created,
-                                                                'date_modified': date_modified, 'form': form2,
-                                                                'fields': fields, 'rxform': rxforms},
+
+        data = {'date_created': date_created, 'date_modified': date_modified,
+                'form': form2,'fields': fields, 'rxform': rxforms, 'rx_id': rx.rx_id}
+
+        return render_to_response('erx/dispense_prescription.html', data,
             context_instance=RequestContext(request))
     else:
         if request.method == 'POST':
-            if request.POST['status'] == 'DISPENSED':
-                rx = get_object_or_404(Prescription, rx_id=p_id)
-                rx.status="DISPENSED"
-                form = PrescriptionForm(instance=rx)
-                if form.is_valid():
-                    form.save()
-                    return render_to_response('erx/done.html', {'message': 'Prescription %s dispensed.' % (rx)},
-                                                  context_instance=RequestContext(request))
-                else:
-                    for field in form:
-                        print field.errors
-                    print form.errors
-                    print form.non_field_errors()
-#                else:
-#                    x = form.non_field_errors()
-#                    print form.non_field_errors()
-#                    return render_to_response('erx/done.html', {'message': 'Prescription %s not saved.\nErrors: %s ' % (rx, x)},
-#                                              context_instance=RequestContext(request))
+            rx = get_object_or_404(Prescription, rx_id=p_id)
+            urx = rx.dispense()
+            update = urx.__dict__
+
+            data = dict({'submitted_date': update['submitted_date'], 'status': update['status'], 'prescriber': update['prescriber_id'],
+                    'pharmacy': update['pharmacy_id'], 'patient': update['patient_id']})
+
+            form = PrescriptionForm(data, instance=urx)
+            print form.is_bound
+
+            if form.is_valid():
+                form.save()
+                return render_to_response('erx/done.html', {'message': 'Prescription %s dispensed.' %(rx)},
+                                          context_instance=RequestContext(request))
+
+            else:
+                print form.errors, "ERROR"
+                if form.non_field_errors:
+                    print form.non_field_errors
+                return render_to_response('erx/done.html', {'message': 'Failed', 'errors': form.errors},
+            context_instance=RequestContext(request))
 #
 #End of Pharmacy methods
 #

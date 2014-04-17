@@ -1,13 +1,72 @@
-<html>
-<h1>New Pharmacy</h1><hr>
-<p>Please enter new prescription information below.</p><br>
-<body>
-<form action="." method="post">{% csrf_token %}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 
-{{ form.as_p }}
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <link href="{{ STATIC_URL }}css/manual.css" rel="stylesheet" type="text/css"/>
+        {% load url from future %}
+        <script type="text/javascript" src="{{ STATIC_URL }}js/jquery-1.10.2.js"></script>
+        <script>
+        	$(document).ready(function(){
 
-<input type="submit" value="Submit">
-</form>
+				$('ul.tabs').each(function(){
+					var $active, $content, $links = $(this).find('a');
 
-<br><br><hr><p>New pharmacy page.</p>
-</body></html>
+					$active = $($links.filter('[href="'+location.hash+'"]')[0] || $links[0]);
+					$active.addClass('active');
+
+					$content = $($active[0].hash);
+
+					$links.not($active).each(function () {
+						$(this.hash).hide();
+					});
+
+					$(this).on('click', 'a', function(e){
+						$active.removeClass('active');
+						$content.hide();
+
+						$active = $(this);
+						$content = $(this.hash);
+
+						$active.addClass('active');
+						$content.show();
+
+						e.preventDefault();
+					});
+				});
+
+			});
+        </script>
+        
+        <title>Create Pharmacy View</title>
+    </head>
+
+    <body>
+        <h1>Pharmacy: {{pharmacy}}</h1>
+
+        <ul class='tabs'>
+            <li><a href='#tab1'>Pharmacy Profile</a></li>
+        </ul>
+
+        <form method="post" action=".">{%csrf_token%}
+            <div class='tabs' id='tab1'>
+                <p>Hi, this is the Profile tab.</p>
+
+                <table border="0" style="width:500px; border-spacing:5px; padding:5px;">
+                    {% for field in form %}
+                        <tr>
+                            <td><p>{{field.label}}:</p></td>
+                            <td><p>{{field}}</p></td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            </div>
+
+            <input type="submit" value="Submit" name="submit">
+            <input type="button" value="Cancel" onClick="history.go(-1);return true;">
+            <input type="reset" value="Restore">
+        </form>
+    </body>
+
+<br><br><hr><p>New Pharmacy page.</p>
+</html>

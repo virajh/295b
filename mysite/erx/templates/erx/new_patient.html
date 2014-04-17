@@ -42,7 +42,8 @@
     </head>
 
     <body>
-        <h1>{{patient}}</h1>
+        <h1>New Patient</h1><br>
+        <h4>Enter patient information.</h4><br>
 
         <ul class='tabs'>
             <li><a href='#tab1'>Profile</a></li>
@@ -52,7 +53,7 @@
 
         <form method="post" action=".">{%csrf_token%}
             <div class='tabs' id='tab1'>
-                <p>Hi, this is the Profile tab.</p>
+                <p>Enter basic patient information.</p>
 
                 <table border="0" style="width:500px; border-spacing:5px; padding:5px;">
                     {% for field in p_basic %}
@@ -65,7 +66,7 @@
             </div>
 
             <div class='tabs' id='tab3'>
-                <p>And this is the Medical History tab.</p>
+                <p>Enter known medical history.</p>
 
                 <table border="0" style="width:500px; border-spacing:5px; padding:5px;">
                     {% for field in p_med %}
@@ -79,7 +80,7 @@
 
 
             <div class='tabs' id='tab5'>
-                <p>And this is the Contact Information tab.</p>
+                <p>Enter patient's contact information.</p>
 
                 <table border="0" style="width:500px; border-spacing:5px; padding:5px;">
                     {% for field in p_contact %}

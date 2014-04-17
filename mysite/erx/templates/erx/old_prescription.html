@@ -28,6 +28,7 @@
             <thead>
                 <tr>
                     <th scope="col">Drug & Concentration</th>
+                    <th scope="col">Form</th>
                     <th scope="col">Schedule</th>
                     <th scope="col">Quantity</th>
                     <th scope="col">Substitutions</th>
@@ -40,6 +41,7 @@
                     <td>
                         {{ form.drug_name.value }}
                     </td>
+                    <td>{{ form.drug_form.value }}</td>
                     <td>{{ form.drug_schedule.value }}</td>
                     <td>{{ form.drug_quantity.value }}</td>
                     <td>{{ form.drug_substitution.value }}</td>

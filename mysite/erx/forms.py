@@ -32,6 +32,7 @@ class PharmacyForm(ModelForm):
         model = Pharmacy
         fields = ['pharmacy_name', 'license_id', 'street_address', 'city', 'state', 'zipcode', 'telephone', 'email']
 
+
 #Prescription form
 class PrescriptionForm(ModelForm):
     class Meta:

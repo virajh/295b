@@ -35,6 +35,7 @@
             <thead>
                 <tr>
                     <th scope="col">Drug & Concentration</th>
+                    <th scope="col">Form</th>
                     <th scope="col">Schedule</th>
                     <th scope="col">Quantity</th>
                     <th scope="col">Substitutions</th>
@@ -49,6 +50,7 @@
                         {% if form.instance.pk %}{{ form.DELETE }}{% endif %}
                         {{ form.drug_name }}
                     </td>
+                    <td>{{ form.drug_form }}</td>
                     <td>{{ form.drug_schedule }}</td>
                     <td>{{ form.drug_quantity }}</td>
                     <td>{{ form.drug_substitution }}</td>
