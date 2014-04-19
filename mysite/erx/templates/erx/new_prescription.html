@@ -53,11 +53,11 @@
                     <td>{{ form.refills }}</td>
                 {% endfor %}
             </tbody>
-        </table>
+        </table><br>
         {{ rxform.management_form }}
-        <input type="submit" value="Submit">
-        <input type="button" value="Cancel" onClick="history.go(-1);return true;">
-        <input type="reset" value="Clear">
+        <input class="myButton" type="submit" value="Submit">
+        <input class="myButton" type="button" value="Cancel" onClick="history.go(-1);return true;">
+        <input class="myButton" type="reset" value="Clear">
     </form>
 
     <br>

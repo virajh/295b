@@ -47,15 +47,13 @@
                     <td>{{ form.refills.value }}</td>
                 {% endfor %}
             </tbody>
-        </table>
+        </table><br>
         {{ rxform.management_form }}
-
-        <a class='PrescriberHome' href="/erx/pharmacy/dispense/{{ rx_id }}">Dispense</a>
 
         <form action='/erx/pharmacy/dispense/{{rx_id}}' method='post'>{%csrf_token%}
             <input type='hidden' name='rx_id' value="{{rx_id}}">
-            <input type="submit" value="Dispense" name="dispense">
-            <input type="button" value="Cancel" onClick="history.go(-1);return true;">
+            <input class="myButton" type="submit" value="Dispense" name="dispense">
+            <input class="myButton" type="button" value="Cancel" onClick="history.go(-1);return true;">
         </form>
 
 <br><br>
