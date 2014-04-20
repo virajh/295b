@@ -23,14 +23,16 @@ def testView(request, **kwargs):
     else:
         message = ""
 
-    pharmacy = Pharmacy.objects.all()[0]
-    my_profile = PharmacyForm(instance=pharmacy)
-    new_p = Prescription.objects.filter(pharmacy=pharmacy, status="SUBMITTED")
-    old_p = Prescription.objects.filter(pharmacy=pharmacy, status="DISPENSED")
+    patient = Patient.objects.all()[2]
+    fields = list(PatientForm(instance=patient))
+    p_profile,p_med, p_contact = fields[1:7], fields[7:12],fields[12:]
+    prescriptions = Prescription.objects.filter(patient=patient)
 
-    return render_to_response('erx/bootstrap.html', {'pharmacy': pharmacy, 'my_profile': my_profile,
-                                                     'new_p': new_p, 'old_p': old_p, 'message': message},
-                                  context_instance=RequestContext(request))
+    labhist = LabHistoryForm(instance=LabHistory(patient=patient))
+    return render_to_response('erx/bootstrap.html', {'patient': patient, 'p_contact': p_contact, 'message': message,
+                                                     'p_profile': p_profile, 'p_all': fields, 'p_med': p_med,
+                                                     'prescriptions': prescriptions, 'p_lab_hist': labhist},
+                              context_instance=RequestContext(request))
 
 
 #
