@@ -42,7 +42,7 @@
     </head>
 
     <body>
-        <h1>{{patient}}</h1>
+        <h1>Patient: {{patient}}</h1>
 
         <ul class='tabs'>
             <li><a href='#tab1'>Profile</a></li>
@@ -89,10 +89,10 @@
                         </tr>
                     {% endfor %}
                 </table>
-            </div>
-            <input type="submit" value="Update" name="update">
-            <input type="button" value="Cancel" onClick="history.go(-1);return true;">
-            <input type="reset" value="Restore">
+            </div><br>
+            <input class="myButton" type="submit" value="Update" name="update">
+            <input class="myButton" type="button" value="Cancel" onClick="history.go(-1);return true;">
+            <input class="myButton" type="reset" value="Restore">
         </form>
     </body>
 

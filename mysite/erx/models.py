@@ -182,6 +182,19 @@ refill_choices = (
     (3,3),
 )
 
+form_choices = (
+    ('Chewable Tablet', 'Chewable Tablet'),
+    ('Oral Tablet', 'Oral Tablet'),
+    ('Oral Pill', 'Oral Pill'),
+    ('Intravenous Injection', 'Intravenous Injection'),
+    ('Oral Solution', 'Oral Solution'),
+    ('Oral Capsule', 'Oral Capsule'),
+    ('Topical Cream', 'Topical Cream'),
+    ('Extended Release Tablet', 'Extended Release Tablet'),
+    ('Oral Syrup', 'Oral Syrup'),
+    ('Nasal Spray', 'Nasal Spray'),
+)
+
 class RxEntry(models.Model):
 
     drug_name = models.CharField(verbose_name='Drug with concentration', max_length=200)

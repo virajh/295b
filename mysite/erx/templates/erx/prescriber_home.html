@@ -64,13 +64,34 @@
 
         <div class='tabs' id='tab2'>
             <p>This is the Prescriptions tab.</p>
-            {% for prescription in my_prescriptions %}
-            <li>
-            <a href="{% url 'erx:handle_prescription' prescription.rx_id %}">{{ prescription }}</a>
-            </li>
-            <br><hr>
-            {% endfor %}
-            <br>
+            <fieldset>
+                <legend>Pending</legend><br><br>
+                {% for prescription in pending %}
+                    <li>
+                        <a href="{% url 'erx:handle_prescription' prescription.rx_id %}">{{ prescription }}</a>
+                    </li>
+                    <br><hr>
+                {% endfor %}
+            </fieldset>
+            <fieldset>
+                <legend>Submitted</legend><br><br>
+                {% for prescription in submitted %}
+                    <li>
+                        <a href="{% url 'erx:handle_prescription' prescription.rx_id %}">{{ prescription }}</a>
+                    </li>
+                    <br><hr>
+                {% endfor %}
+            </fieldset>
+            <fieldset>
+                <legend>Dispensed</legend><br><br>
+                {% for prescription in dispensed %}
+                    <li>
+                        <a href="{% url 'erx:handle_prescription' prescription.rx_id %}">{{ prescription }}</a>
+                    </li>
+                    <br><hr>
+                {% endfor %}
+            </fieldset>
+
             <a class='PrescriberHome' href="/erx/rx/newForPrescriber/{{ prescriber.prescriber_id }}">New Prescription</a>
 
         </div>
@@ -90,7 +111,11 @@
             <a class='PrescriberHome' href="/erx/prescriber/{{ prescriber.prescriber_id }}">Modify</a>
 
         </div>
-    </body>
 
+        <br><a class='myButton' href="/erx/prescriber/home">Home</a><br>
+
+        <notice>{{message}}</notice>
+
+    </body>
 <br><br><hr><p>Prescriber home page.</p>
 </html>

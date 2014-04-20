@@ -4,9 +4,6 @@ from erx import views
 
 urlpatterns = patterns('',
 
-    url(r'^test/$', views.testView),
-
-
     url(r'^prescriber/home/$', views.prescriberHome, name='prescriberHome'),
     url(r'^prescriber/$', views.getAllPrescriber, name='get_all_prescriber'),
     url(r'^prescriber/new/$', views.createPrescriber, name='new_prescriber'),

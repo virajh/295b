@@ -63,9 +63,9 @@
         <div class='tabs' id='tab2'>
             <p>Prescriptions that were dispensed.</p>
             {% for prescription in old_p %}
-            <li>
-            <a href="{% url 'erx:old_prescription' prescription.rx_id %}">{{ prescription }}</a>
-            </li>
+                <li>
+                    <a href="{% url 'erx:old_prescription' prescription.rx_id %}">{{ prescription }}</a>
+                </li>
             <br><hr>
             {% endfor %}
             <br>
@@ -85,6 +85,11 @@
             <br>
             <a class='PrescriberHome' href="/erx/pharmacy/{{ pharmacy.pharmacy_id }}">Modify</a>
         </div>
+
+        <br><a class='myButton' href="/erx/pharmacy/home">Home</a><br>
+
+        <notice>{{message}}</notice>
+
     </body>
 
 <br><br><hr><p>Pharmacy home page.</p>
