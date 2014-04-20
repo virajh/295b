@@ -1,121 +1,122 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-
+<!DOCTYPE html>
+<html lang="en">
     <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-        <link href="{{ STATIC_URL }}css/manual.css" rel="stylesheet" type="text/css"/>
-        {% load url from future %}
-        <script type="text/javascript" src="{{ STATIC_URL }}js/jquery-1.10.2.js"></script>
-        <script>
-        	$(document).ready(function(){
-				$('ul.tabs').each(function(){
-					var $active, $content, $links = $(this).find('a');
-
-					$active = $($links.filter('[href="'+location.hash+'"]')[0] || $links[0]);
-					$active.addClass('active');
-
-					$content = $($active[0].hash);
-
-					$links.not($active).each(function () {
-						$(this.hash).hide();
-					});
-
-					$(this).on('click', 'a', function(e){
-						$active.removeClass('active');
-						$content.hide();
-
-						$active = $(this);
-						$content = $(this.hash);
-
-						$active.addClass('active');
-						$content.show();
-
-						e.preventDefault();
-					});
-				});
-			});
-
+        <!-- Le styles -->
+        <link href="{{STATIC_URL}}/css/bootstrap/css/bootstrap.css" rel="stylesheet">
+        <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7/jquery.js"></script>
+        <script type="text/javascript" src="{{STATIC_URL}}/css/bootstrap/js/bootstrap.js"></script>
+        <script type="text/javascript">
+            jQuery(document).ready(function ($) {
+                $('#tabs').tab();
+            });
         </script>
-        
         <title>Prescriber Home</title>
     </head>
-
+ 
     <body>
-        <h1>Welcome {{prescriber}}</h1>
+        <blockquote>
+            <h1><a href="/erx/prescriber/home">Welcome {{prescriber}}</a></h1>
+        </blockquote>
+        <div class="container">
+             
+            <!-------->
+            <div id="content">
+                <ul id="tabs" class="nav nav-tabs" data-tabs="tabs">
+                    <li class="active"><a href="#patient" data-toggle="tab">Patients</a></li>
+                    <li><a href="#prescription" data-toggle="tab">Prescriptions</a></li>
+                    <li><a href="#profile" data-toggle="tab">Profile</a></li>
+                </ul>
 
-        <ul class='tabs'>
-            <li><a href='#tab1'>Patients</a></li>
-            <li><a href='#tab2'>Prescriptions</a></li>
-            <li><a href='#tab3'>Profile</a></li>
-        </ul>
+                <div id="my-tab-content" class="tab-content">
+                    <div class="tab-pane active" id="patient">
+                        <h2>Patients</h2>
+                        <p>Hi, this is the Patients tab.</p>
+                        <div class="well">
 
-        <div class='tabs' id='tab1'>
-            <p>Hi, this is the Patients tab.</p>
+                                {% for patient in my_patients %}
+                                    <li>
+                                        <a href="{% url 'erx:prescriber_select_patient' patient.patient_id %}">{{ patient }}</a>
+                                    </li><br>
+                                {% endfor %}
 
-            {% for patient in my_patients %}
-                <li>
-                    <a href="{% url 'erx:prescriber_select_patient' patient.patient_id %}">{{ patient }}</a>
-                </li>
-                <br><hr>
-            {% endfor %}
-            <br>
-            <a class='PrescriberHome' href="/erx/patient/newForPrescriber/{{ prescriber.prescriber_id }}">New Patient</a>
-        </div>
+                        </div>
+                        <a href="/erx/patient/newForPrescriber/{{ prescriber.prescriber_id }}" class="btn btn-info">New Patient</a>
+                    </div>
 
-        <div class='tabs' id='tab2'>
-            <p>This is the Prescriptions tab.</p>
-            <fieldset>
-                <legend>Pending</legend><br><br>
-                {% for prescription in pending %}
-                    <li>
-                        <a href="{% url 'erx:handle_prescription' prescription.rx_id %}">{{ prescription }}</a>
-                    </li>
-                    <br><hr>
-                {% endfor %}
-            </fieldset>
-            <fieldset>
-                <legend>Submitted</legend><br><br>
-                {% for prescription in submitted %}
-                    <li>
-                        <a href="{% url 'erx:handle_prescription' prescription.rx_id %}">{{ prescription }}</a>
-                    </li>
-                    <br><hr>
-                {% endfor %}
-            </fieldset>
-            <fieldset>
-                <legend>Dispensed</legend><br><br>
-                {% for prescription in dispensed %}
-                    <li>
-                        <a href="{% url 'erx:handle_prescription' prescription.rx_id %}">{{ prescription }}</a>
-                    </li>
-                    <br><hr>
-                {% endfor %}
-            </fieldset>
+                    <div class="tab-pane" id="prescription">
+                        <h2>Prescriptions</h2>
+                        <p>This is the Prescriptions tab.</p>
+                        <h3>Pending</h3>
+                        <div class="well">
+                            {% for prescription in pending %}
+                                <li>
+                                    <a href="{% url 'erx:handle_prescription' prescription.rx_id %}">{{ prescription }}</a>
+                                </li>
+                            {% endfor %}
+                        </div>
 
-            <a class='PrescriberHome' href="/erx/rx/newForPrescriber/{{ prescriber.prescriber_id }}">New Prescription</a>
+                        <h3>Submitted</h3>
+                        <div class="well">
+                            {% for prescription in submitted %}
+                                <li>
+                                    <a href="{% url 'erx:handle_prescription' prescription.rx_id %}">{{ prescription }}</a>
+                                </li>
+                            {% endfor %}
+                        </div>
 
-        </div>
+                        <h3>Dispensed</h3>
+                        <div class="well">
+                            {% for prescription in dispensed %}
+                                <li>
+                                    <a href="{% url 'erx:handle_prescription' prescription.rx_id %}">{{ prescription }}</a>
+                                </li>
+                            {% endfor %}
+                        </div>
 
-        <div class='tabs' id='tab3'>
-            <p>And this is the Profile tab.</p>
+                        <a href="/erx/rx/newForPrescriber/{{ prescriber.prescriber_id }}" class="btn btn-info">New Prescription</a>
+                    </div>
 
-            <table border="0" style="width:500px; border-spacing:5px; padding:5px;">
-                {% for field in my_profile %}
-                    <tr>
-                        <td><p>{{field.label}}</p></td>
-                        <td><p>{{field.value}}</p></td>
-                    </tr>
-                {% endfor %}
-            </table>
-            <br>
-            <a class='PrescriberHome' href="/erx/prescriber/{{ prescriber.prescriber_id }}">Modify</a>
+                    <div class="tab-pane" id="profile">
+                        <h2>Profile</h2>
+                        <p>And, this is the Profile tab.</p>
+                        <table class="table table-striped table-condensed">
+                            {% for field in my_profile %}
+                                <tr>
+                                    <td><p>{{field.label}}</p></td>
+                                    <td><p>{{field.value}}</p></td>
+                                </tr>
+                            {% endfor %}
+                        </table>
 
-        </div>
+                        <a href="/erx/prescriber/{{ prescriber.prescriber_id }}" class="btn btn-warning">Modify Profile</a>
+                    </div>
 
-        <br><a class='myButton' href="/erx/prescriber/home">Home</a><br>
+                </div><!--my-tab-content-->
+            </div><br><!--content-->
 
-        <notice>{{message}}</notice>
+        {% if message %}
+            <div class="alert">
+              <button type="button" class="close" data-dismiss="alert">&times;</button>
+              <strong>Warning!</strong>{{message}}
+            </div>
 
+            <div class="alert alert-error">
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+                <strong>Error!</strong>{{message}}
+            </div>
+
+            <div class="alert alert-success">
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+                <strong>Success!</strong>{{message}}
+            </div>
+
+            <div class="alert alert-info">
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+                <strong>Note:</strong>{{message}}
+            </div>
+        {% endif %}
+        </div> <!-- container -->
+<br>
+<p><small>Pharmacy Home Page</small></p>
     </body>
-<br><br><hr><p>Prescriber home page.</p>
 </html>

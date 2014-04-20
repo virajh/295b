@@ -16,6 +16,23 @@ from erx.models import Prescriber, Patient, Pharmacy, Prescription, RxEntry, Lab
 
 #Create your views here.
 
+def testView(request, **kwargs):
+
+    if 'message' in kwargs:
+        message = kwargs['message']
+    else:
+        message = ""
+
+    pharmacy = Pharmacy.objects.all()[0]
+    my_profile = PharmacyForm(instance=pharmacy)
+    new_p = Prescription.objects.filter(pharmacy=pharmacy, status="SUBMITTED")
+    old_p = Prescription.objects.filter(pharmacy=pharmacy, status="DISPENSED")
+
+    return render_to_response('erx/bootstrap.html', {'pharmacy': pharmacy, 'my_profile': my_profile,
+                                                     'new_p': new_p, 'old_p': old_p, 'message': message},
+                                  context_instance=RequestContext(request))
+
+
 #
 #CRUD & Search methods for Prescriber
 #
