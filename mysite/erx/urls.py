@@ -21,7 +21,7 @@ urlpatterns = patterns('',
     url(r'^pharmacy/$', views.getAllPharmacy, name='get_all_pharmacy'),
     url(r'^pharmacy/home/$', views.pharmacyHome, name='pharmacyHome'),
     url(r'^pharmacy/new/$', views.createPharmacy, name='new_pharmacy'),
-    url(r'^pharmacy/dispense/(?P<p_id>\w+)$', views.dispenseRx, name='dispense_prescription'),
+    url(r'^pharmacy/dispense/(?P<p_id>\w+)/$', views.dispenseRx, name='dispense_prescription'),
     url(r'^pharmacy/(?P<pharmacy_id>\w+)/$', views.handlePharmacy, name='handle_pharmacy'),
 
     url(r'^rx/$', views.getAllPrescription, name='get_all_prescription'),

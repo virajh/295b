@@ -18,31 +18,14 @@ from erx.models import Prescriber, Patient, Pharmacy, Prescription, RxEntry, Lab
 
 def testView(request, **kwargs):
 
-    if 'message' in kwargs:
-        message = kwargs['message']
-    else:
-        message = ""
-
     rx = Prescription.objects.all()[0]
     form = PrescriptionForm(instance=rx)
-    fields = list(form)
-    fields.pop(0)
-    fields.pop(0)
-    fields.pop(0)
-    form2 = dict()
-    form2['Patient'] = rx.patient.__unicode__()
-    form2['Prescriber'] = rx.prescriber.__unicode__()
-    form2['Pharmacy'] = rx.pharmacy.__unicode__()        
-
-    RxEntryForm= inlineformset_factory(Prescription, RxEntry, can_delete=True, extra=0)
     rxforms = RxEntryForm(instance=rx)
     date_created = rx.created_date
     date_modified = rx.last_modified
-    return render_to_response('erx/bootstrap.html', {'date_created': date_created,'date_modified': date_modified,
-                                                     'form': form2, 'fields': fields, 'rxform': rxforms,'prescription': rx,
-                                                     'message': 'This prescription was dispensed on %s.' %(date_modified)},
+    return render_to_response('erx/bootstrap.html', {'date_created': date_created, 'date_modified': date_modified,
+                                                     'form': form, 'rxform': rxforms, 'prescription': rx},
         context_instance=RequestContext(request))
-
 
 #
 #CRUD & Search methods for Prescriber
