@@ -15,7 +15,7 @@
  
     <body>
         <blockquote>
-            <h1><a href=".">{{patient}}</a></h1>
+            <h1><a href="">{{patient}}</a></h1>
 
 
         <a class="btn btn-small" href="/erx/prescriber/home"><i class="icon-home"></i> Home</a>
@@ -31,6 +31,13 @@
                     <li><a href="#labh" data-toggle="tab">Lab History</a></li>
                     <li><a href="#contact" data-toggle="tab">Contact Information</a></li>
                 </ul>
+
+                {% if message %}
+                    <div class="alert alert-success alert-block">
+                        <button type="button" class="close" data-dismiss="alert">&times;</button>
+                        <strong>Success! </strong>{{message}}
+                    </div>
+                {% endif %}
 
                 <div id="my-tab-content" class="tab-content">
                     <div class="tab-pane active" id="profile">
@@ -101,31 +108,8 @@
                         <a href="/erx/patient/{{patient.patient_id }}" class="btn btn-warning">Modify Profile</a>
                     </div>
 
-
                 </div><!--my-tab-content-->
             </div><!--content-->
-
-            {% if message %}
-                <div class="alert">
-                  <button type="button" class="close" data-dismiss="alert">&times;</button>
-                  <strong>Warning!</strong>{{message}}
-                </div>
-
-                <div class="alert alert-error">
-                    <button type="button" class="close" data-dismiss="alert">&times;</button>
-                    <strong>Error!</strong>{{message}}
-                </div>
-
-                <div class="alert alert-success">
-                    <button type="button" class="close" data-dismiss="alert">&times;</button>
-                    <strong>Success!</strong>{{message}}
-                </div>
-
-                <div class="alert alert-info">
-                    <button type="button" class="close" data-dismiss="alert">&times;</button>
-                    <strong>Note:</strong>{{message}}
-                </div>
-            {% endif %}
         </div> <!-- container -->
 <br><hr>
 <p><small>Prescriber Patient Page</small></p>

@@ -107,9 +107,14 @@ def handlePrescriber(request, prescriber_id):
         form = PrescriberForm(request.POST, instance=prescriber)
         if form.is_valid():
             form.save()
-            return prescriberHome(request, prescriber=prescriber_id, message="Prescriber profile modified successfully.")
+            return prescriberHome(request, prescriber=prescriber_id,
+                message="[%s] Prescriber %s profile modified successfully." % (strftime("%Y-%m-%d %H:%M:%S"), prescriber))
         else:
-            return render_to_response('erx/done.html', {'message': 'Prescriber %s not saved.\nErrors: %s ' % (prescriber, form.errors)},
+            fields = list(form)
+            p_basic, p_contact = fields[:5], fields[5:]
+            return render_to_response('erx/new_prescriber.html',
+                {'prescriber': prescriber, 'p_basic': p_basic, 'p_contact': p_contact,
+                 'message': '[%s] Prescriber %s not saved. Errors: %s ' % (strftime("%Y-%m-%d %H:%M:%S"), prescriber, form.errors)},
                 context_instance=RequestContext(request))
 
 #        else:
@@ -157,19 +162,30 @@ def createPatientForPrescriber(request, p_id):
        form = PatientForm(request.POST)
 
        if form.is_valid():
-           form.save()
+           patient=form.save()
            prescriber = get_object_or_404(Prescriber, prescriber_id=p_id)
            my_profile = PrescriberForm(instance=prescriber)
            my_patients = Patient.objects.filter(prescriber=prescriber)
-           my_prescriptions = Prescription.objects.filter(prescriber=prescriber)
+           pending = Prescription.objects.filter(prescriber=prescriber, status="PENDING")
+           submitted = Prescription.objects.filter(prescriber=prescriber, status="SUBMITTED")
+           dispensed = Prescription.objects.filter(prescriber=prescriber, status="DISPENSED")
 
-           return render_to_response('erx/prescriber_home.html', {'prescriber': prescriber, 'my_profile': my_profile,
-                                                                  'my_patients': my_patients, 'my_prescriptions': my_prescriptions,
-                                                                  'message': 'Patient successfully created.'},
+           return render_to_response('erx/prescriber_home.html',
+                {'prescriber': prescriber, 'my_profile': my_profile, 'my_patients': my_patients,
+                 'pending': pending, 'submitted': submitted, 'dispensed': dispensed,
+                 'message': '[%s] Patient %s successfully created.' %(strftime("%Y-%m-%d %H:%M:%S"), patient)},
                               context_instance=RequestContext(request))
 
        else:
-           return render_to_response('erx/done.html', {'message': form.errors}, context_instance=RequestContext(request))
+           prescriber = Prescriber.objects.get(prescriber_id = p_id)
+           fields = list(form)
+           p_basic = fields[:7]
+           p_med = fields[7:12]
+           p_contact = fields[12:]
+           return render_to_response('erx/new_patient.html',
+                {'p_basic': p_basic, 'p_med': p_med,'p_contact': p_contact,
+                 'message': '[%s] Patient creation failed. Errors: %s' % (strftime("%Y-%m-%d %H:%M:%S"), form.errors)},
+            context_instance=RequestContext(request))
 
     else:
        if request.method == "GET":
@@ -180,9 +196,7 @@ def createPatientForPrescriber(request, p_id):
            p_basic = fields[:7]
            p_med = fields[7:12]
            p_contact = fields[12:]
-           return render_to_response('erx/new_patient.html',
-                                     {'p_basic': p_basic, 'p_med': p_med,
-                                      'p_contact': p_contact, 'form': form},
+           return render_to_response('erx/new_patient.html',{'p_basic': p_basic, 'p_med': p_med,'p_contact': p_contact},
                                      context_instance=RequestContext(request))
 
 
@@ -241,7 +255,15 @@ def handlePatient(request, patient_id):
             return prescriberPatient(request, p_id=patient_id,
                 message='[%s] Patient profile for %s updated successfully.' % (strftime("%Y-%m-%d %H:%M:%S"), patient))
         else:
-            return render_to_response('erx/done.html', {'message': 'Patient %s not saved.\nErrors: %s ' % (patient, form.errors)},
+            fields = list(form)
+            p_basic = fields[:7]
+            p_med = fields[7:12]
+            p_contact = fields[12:]
+            return render_to_response('erx/update_patient.html',
+                    {'patient': patient,'p_basic': p_basic, 'p_med': p_med,
+                     'p_contact': p_contact, 'form': form,
+                     'message': '[%s] Patient %s not saved. Errors: %s' %
+                        (strftime("%Y-%m-%d %H:%M:%S"), patient, form.errors)},
                 context_instance=RequestContext(request))
 
         #else:
@@ -344,9 +366,12 @@ def handlePharmacy(request, pharmacy_id):
         form = PharmacyForm(request.POST, instance=pharmacy)
         if form.is_valid():
             form.save()
-            return pharmacyHome(request, pharmacy=pharmacy_id, message="[%s] %s profile successfully updated." % (strftime("%Y-%m-%d %H:%M:%S"), pharmacy))
+            return pharmacyHome(request, pharmacy=pharmacy_id,
+                message="[%s] %s profile successfully updated." % (strftime("%Y-%m-%d %H:%M:%S"), pharmacy))
         else:
-            return render_to_response('erx/done.html', {'message': 'Pharmacy %s not saved.\nErrors: %s ' % (pharmacy, form.errors)},
+            return render_to_response('erx/new_pharmacy.html',
+                {'pharmacy': pharmacy, 'form': form,
+                 'message': '[%s] Pharmacy %s not saved. Errors: %s' % (strftime("%Y-%m-%d %H:%M:%S"), pharmacy, form.errors)},
                 context_instance=RequestContext(request))
 
 #        else:#to do

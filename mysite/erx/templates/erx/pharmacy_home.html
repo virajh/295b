@@ -15,7 +15,7 @@
  
     <body>
         <blockquote>
-            <h1><a href=".">{{pharmacy}}</a></h1>
+            <h1><a href="/erx/pharmacy/home">{{pharmacy}}</a></h1>
         </blockquote>
         <div class="container">
              
@@ -26,6 +26,12 @@
                     <li><a href="#old" data-toggle="tab">Archived Prescriptions</a></li>
                     <li><a href="#profile" data-toggle="tab">Profile</a></li>
                 </ul>
+                {% if message %}
+                    <div class="alert alert-success alert-block">
+                        <button type="button" class="close" data-dismiss="alert">&times;</button>
+                        <strong>Success! </strong>{{message}}
+                    </div>
+                {% endif %}
 
                 <div id="my-tab-content" class="tab-content">
                     <div class="tab-pane active" id="new">
@@ -71,28 +77,6 @@
 
                 </div><!--my-tab-content-->
             </div><!--content-->
-
-            {% if message %}
-                <div class="alert">
-                  <button type="button" class="close" data-dismiss="alert">&times;</button>
-                  <strong>Warning!</strong>{{message}}
-                </div>
-
-                <div class="alert alert-error">
-                    <button type="button" class="close" data-dismiss="alert">&times;</button>
-                    <strong>Error!</strong>{{message}}
-                </div>
-
-                <div class="alert alert-success">
-                    <button type="button" class="close" data-dismiss="alert">&times;</button>
-                    <strong>Success!</strong>{{message}}
-                </div>
-
-                <div class="alert alert-info">
-                    <button type="button" class="close" data-dismiss="alert">&times;</button>
-                    <strong>Note:</strong>{{message}}
-                </div>
-            {% endif %}
         </div> <!-- container -->
 <br><hr>
 <p><small>Pharmacy Home Page</small></p>

@@ -1,101 +1,90 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-
+<!DOCTYPE html>
+<html lang="en">
     <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-        <link href="{{ STATIC_URL }}css/manual.css" rel="stylesheet" type="text/css"/>
-        {% load url from future %}
-        <script type="text/javascript" src="{{ STATIC_URL }}js/jquery-1.10.2.js"></script>
-        <script>
-        	$(document).ready(function(){
-
-				$('ul.tabs').each(function(){
-					var $active, $content, $links = $(this).find('a');
-
-					$active = $($links.filter('[href="'+location.hash+'"]')[0] || $links[0]);
-					$active.addClass('active');
-
-					$content = $($active[0].hash);
-
-					$links.not($active).each(function () {
-						$(this.hash).hide();
-					});
-
-					$(this).on('click', 'a', function(e){
-						$active.removeClass('active');
-						$content.hide();
-
-						$active = $(this);
-						$content = $(this.hash);
-
-						$active.addClass('active');
-						$content.show();
-
-						e.preventDefault();
-					});
-				});
-
-			});
+        <!-- Le styles -->
+        <link href="{{STATIC_URL}}/css/bootstrap/css/bootstrap.css" rel="stylesheet">
+        <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7/jquery.js"></script>
+        <script type="text/javascript" src="{{STATIC_URL}}/css/bootstrap/js/bootstrap.js"></script>
+        <script type="text/javascript">
+            jQuery(document).ready(function ($) {
+                $('#tabs').tab();
+            });
         </script>
-        
-        <title>Create Patient View</title>
+        <title>Create Patient</title>
     </head>
-
+ 
     <body>
-        <h1>New Patient</h1><br>
-        <h4>Enter patient information.</h4><br>
+        <blockquote>
+            <h1><a href="">Create Patient</a></h1>
+        </blockquote>
+        <div class="container">
+             
+            <!-------->
+            <div id="content">
+                <ul id="tabs" class="nav nav-tabs" data-tabs="tabs">
+                    <li class="active"><a href="#profile" data-toggle="tab">Profile</a></li>
+                    <li><a href="#medh" data-toggle="tab">Medical History</a></li>
+                    <li><a href="#contact" data-toggle="tab">Contact Information</a></li>
+                </ul>
 
-        <ul class='tabs'>
-            <li><a href='#tab1'>Profile</a></li>
-            <li><a href='#tab3'>Medical History</a></li>
-            <li><a href='#tab5'>Contact Information</a></li>
-        </ul>
+                {% if message %}
+                    <div class="alert alert-error alert-block">
+                        <button type="button" class="close" data-dismiss="alert">&times;</button>
+                        <strong>Error! </strong>{{message}}
+                    </div>
+                {% endif %}
 
-        <form method="post" action=".">{%csrf_token%}
-            <div class='tabs' id='tab1'>
-                <p>Enter basic patient information.</p>
+            <form method="post" action=".">{%csrf_token%}
+                <div id="my-tab-content" class="tab-content">
+                    <div class="tab-pane active" id="profile">
+                        <h2>Profile</h2>
+                        <p>Hi, this is the patient's profile.</p>
+                        <table class="table table-striped table-condensed">
+                            {% for field in p_basic %}
+                                <tr>
+                                    <td><p>{{field.label}}</p></td>
+                                    <td><p>{{field}}</p></td>
+                                </tr>
+                            {% endfor %}
+                        </table>
 
-                <table border="0" style="width:500px; border-spacing:5px; padding:5px;">
-                    {% for field in p_basic %}
-                        <tr>
-                            <td>{{field.label}}:</td>
-                            <td>{{field}}</td>
-                        </tr>
-                    {% endfor %}
-                </table>
-            </div>
+                    </div>
 
-            <div class='tabs' id='tab3'>
-                <p>Enter known medical history.</p>
+                    <div class="tab-pane" id="medh">
+                        <h2>Medical History</h2>
+                        <p>And, this is the patient's medical history.</p>
+                        <table class="table table-striped table-condensed">
+                            {% for field in p_med %}
+                                <tr>
+                                    <td><p>{{field.label}}</p></td>
+                                    <td><p>{{field}}</p></td>
+                                </tr>
+                            {% endfor %}
+                        </table>
 
-                <table border="0" style="width:500px; border-spacing:5px; padding:5px;">
-                    {% for field in p_med %}
-                        <tr>
-                            <td>{{field.label}}:</td>
-                            <td>{{field}}</td>                        
-                        </tr>
-                    {% endfor %}
-                </table>
-            </div>
+                    </div>
 
+                    <div class="tab-pane" id="contact">
+                        <h2>Contact Information</h2>
+                        <p>This is the patient's contact information.</p>
+                        <table class="table table-striped table-condensed">
+                            {% for field in p_contact %}
+                                <tr>
+                                    <td><p>{{field.label}}</p></td>
+                                    <td><p>{{field}}</p></td>
+                                </tr>
+                            {% endfor %}
+                        </table>
 
-            <div class='tabs' id='tab5'>
-                <p>Enter patient's contact information.</p>
-
-                <table border="0" style="width:500px; border-spacing:5px; padding:5px;">
-                    {% for field in p_contact %}
-                        <tr>
-                            <td>{{field.label}}:</td>
-                            <td>{{field}}</td>
-                        </tr>
-                    {% endfor %}
-                </table>
-            </div><br>
-            <input class="myButton" type="submit" value="Submit" name="submit">
-            <input class="myButton" type="button" value="Cancel" onClick="history.go(-1);return true;">
-            <input class="myButton" type="reset" value="Clear">
-        </form>
+                    </div>
+                <input type="submit" class="btn btn-warning" value="Submit" name="update">
+                <a class= "btn btn-info" onClick="history.go(-1);return true;">Cancel</a>
+                <input class="btn" type="reset" value="Restore">
+                </form>
+                </div><!--my-tab-content-->
+            </div><!--content-->
+        </div> <!-- container -->
+<br><hr>
+<p><small>New Patient page</small></p>
     </body>
-
-<br><br><hr><p>New Patient page.</p>
 </html>
