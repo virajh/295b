@@ -35,7 +35,7 @@
 
                 <div id="my-tab-content" class="tab-content">
                     <div class="tab-pane active" id="new">
-                        <h2>Outstanding Prescriptions</h2>
+                        <h3>Outstanding Prescriptions</h3>
                         <p>Hi, these are the Prescriptions to be dispensed.</p>
                         <div class="well">
                             {% for prescription in new_p %}
@@ -48,7 +48,7 @@
                     </div>
 
                     <div class="tab-pane" id="old">
-                        <h2>Archived Prescriptions</h2>
+                        <h3>Archived Prescriptions</h3>
                         <p>These are archived Prescriptions.</p>
                         <div class="well">
                             {% for prescription in old_p %}
@@ -61,7 +61,7 @@
                     </div>
 
                     <div class="tab-pane" id="profile">
-                        <h2>Profile</h2>
+                        <h3>Profile</h3>
                         <p>And, this is the Profile tab.</p>
                         <table class="table table-striped table-condensed table-bordered">
                             {% for field in my_profile %}
