@@ -1201,6 +1201,16 @@ select {
   border: 1px solid #cccccc;
 }
 
+/*by virajh*/
+input[type="checkbox"] {
+ width: 50px;
+}
+
+/*by virajh*/
+input[type="text"] {
+  width: 135px;
+}
+
 select[multiple],
 select[size] {
   height: auto;
