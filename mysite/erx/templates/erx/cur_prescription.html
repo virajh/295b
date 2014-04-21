@@ -1,128 +1,141 @@
-<html>
-<head>
-    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-    <link href="{{ STATIC_URL }}css/manual.css" rel="stylesheet" type="text/css" media="screen" />
-
-    <script type="text/javascript" src="{{ STATIC_URL }}js/jquery-1.11.0.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.formset.js"></script>
-
-    <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.ui.core.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.ui.widget.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.ui.position.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.ui.menu.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.ui.autocomplete.js"></script>
-
-    {{ rxform.media }}
-
-<script type="text/javascript">
-    $(function() {
-        $('#id_drugs_table tbody tr').formset({
-            prefix: '{{ rxform.prefix }}',
-            added: function(row) {
-                var txt = row.find('.autocomplete-me');
-                txt.unbind();
-                makeAutocomplete(txt);
-            }
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        {% load url from future %}
+        <!-- Le styles -->
+        <link href="{{STATIC_URL}}/css/bootstrap/css/bootstrap.css" rel="stylesheet">
+        <script type="text/javascript" src="{{STATIC_URL}}/css/bootstrap/js/jquery-1.7.js"></script>
+        <script type="text/javascript" src="{{STATIC_URL}}/css/bootstrap/js/bootstrap.js"></script>
+        <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.ui.core.js"></script>
+        <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.ui.widget.js"></script>
+        <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.ui.position.js"></script>
+        <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.ui.menu.js"></script>
+        <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.ui.autocomplete.js"></script>
+        <script type="text/javascript" src="{{ STATIC_URL }}js/jquery-1.11.0.js"></script>
+        <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.formset.js"></script>
+        {{ rxform.media }}
+        <script type="text/javascript">
+        $(function() {
+            $('#id_drugs_table tbody tr').formset({
+                prefix: '{{ rxform.prefix }}',
+                added: function(row) {
+                    var txt = row.find('.autocomplete-me');
+                    txt.unbind();
+                    makeAutocomplete(txt);
+                }
+            });
+            var drugForms = [
+			        "Intravenous Injection",
+			        "Injectable Solution",
+                    "Nasal Spray",
+                    "Nasal Inhalant",
+			        "Oral Pill",
+			        "Oral Tablet",
+			        "Oral Capsule",
+			        "Oral Syrup",
+			        "Oral Solution",
+                    "Topical Cream",
+                    "Topical Gel",
+                    "Topical Spray",
+                    "Topical Ointment",
+                    "Topical Lotion",
+                    "Topical Ointment",
+                    "Transdermal Patch",
+                    "Transdermal Gel",
+		        ];
+		        $( "#id_rxentry_set-0-drug_form" ).autocomplete({
+			        source: drugForms
+		        });
+		        $( "#id_rxentry_set-1-drug_form" ).autocomplete({
+			        source: drugForms
+		        });
+		        $( "#id_rxentry_set-2-drug_form" ).autocomplete({
+			        source: drugForms
+		        });
+		        $( "#id_rxentry_set-3-drug_form" ).autocomplete({
+			        source: drugForms
+		        });
+		        $( "#id_rxentry_set-4-drug_form" ).autocomplete({
+			        source: drugForms
+		        });
+		        $( "#id_rxentry_set-5-drug_form" ).autocomplete({
+			        source: drugForms
+		        });
+		        $( "#id_rxentry_set-6-drug_form" ).autocomplete({
+			        source: drugForms
+		        });
+		        $( "#id_rxentry_set-7-drug_form" ).autocomplete({
+			        source: drugForms
+		        });
         });
-        var drugForms = [
-			    "Intravenous Injection",
-			    "Injectable Solution",
-                "Nasal Spray",
-                "Nasal Inhalant",
-			    "Oral Pill",
-			    "Oral Tablet",
-			    "Oral Capsule",
-			    "Oral Syrup",
-			    "Oral Solution",
-                "Topical Cream",
-                "Topical Gel",
-                "Topical Spray",
-                "Topical Ointment",
-                "Topical Lotion",
-                "Topical Ointment",
-                "Transdermal Patch",
-                "Transdermal Gel",
-		    ];
-		    $( "#id_rxentry_set-0-drug_form" ).autocomplete({
-			    source: drugForms
-		    });
-		    $( "#id_rxentry_set-1-drug_form" ).autocomplete({
-			    source: drugForms
-		    });
-		    $( "#id_rxentry_set-2-drug_form" ).autocomplete({
-			    source: drugForms
-		    });
-		    $( "#id_rxentry_set-3-drug_form" ).autocomplete({
-			    source: drugForms
-		    });
-		    $( "#id_rxentry_set-4-drug_form" ).autocomplete({
-			    source: drugForms
-		    });
-		    $( "#id_rxentry_set-5-drug_form" ).autocomplete({
-			    source: drugForms
-		    });
-		    $( "#id_rxentry_set-6-drug_form" ).autocomplete({
-			    source: drugForms
-		    });
-		    $( "#id_rxentry_set-7-drug_form" ).autocomplete({
-			    source: drugForms
-		    });
-    });
-</script>
-        <title>Current Prescription View</title>
-</head>
 
-<h1>Prescription</h1><hr>
-<p>Please find prescription information below.</p><br>
+        </script>
+        <title>Update Prescription</title>
+    </head>
+ 
+    <body>
+        <blockquote>
+            <h1><a href="">Update Prescription</a></h1>
+            <h2 class="text-center">{{prescription}}</h2>
+        </blockquote>
+        <div class="container">
+            {% if message %}
+                <div class="alert alert-error alert-block">
+                    <button type="button" class="close" data-dismiss="alert">&times;</button>
+                    <strong>Error: </strong>{{message}}
+                </div>
+            {% endif %}
 
-<body>
-    <form action="" method="post">{% csrf_token %}
+            <h4>Prescription Information</h4>
+            <form class="form form-inline" method="post" action=".">{%csrf_token%}
+                <div class="well well-small">
+                    {{form.as_p}}
+                    <p>Date Created: {{ date_created }}</p>
+                    <p>Last Modified: {{ date_modified }}</p>
+                </div>
 
-        {{ form.as_p }}
+                <h4>Drugs</h4>
+                <table class="table table-bordered table-hover" id="id_drugs_table">
+                    <thead>
+                        <tr>
+                            <th scope="col">Drug & Concentration</th>
+                            <th scope="col">Form</th>
+                            <th scope="col">Schedule</th>
+                            <th scope="col">Quantity</th>
+                            <th scope="col">Substitute</th>
+                            <th scope="col">Refills</th>
+                        </tr>
+                    </thead>
 
-        <p>Date Created: {{ date_created }}</p>
-        <p>Last Modified: {{ date_modified }}</p>
-        <h3>Drugs:</h3>
-        <table class="TFtable" id="id_drugs_table" border="0" cellpadding="0" cellspacing="5">
-            <thead>
-                <tr>
-                    <th scope="col">Drug & Concentration</th>
-                    <th scope="col">Form</th>
-                    <th scope="col">Schedule</th>
-                    <th scope="col">Quantity</th>
-                    <th scope="col">Substitutions</th>
-                    <th scope="col">Refills</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for form in rxform.forms %}
-                <tr id="{{ form.prefix }}-row">
-                    <td>
-                        {% for fld in form.hidden_fields %}{{ fld }}{% endfor %}
-                        {% if form.instance.pk %}{{ form.DELETE }}{% endif %}
-                        {{ form.drug_name }}
-                    </td>
-                    <td>
-                        <class="ui-widget">
-                            {{ form.drug_form }}
-                        </class>
-                    </td>
-                    <td>{{ form.drug_schedule }}</td>
-                    <td>{{ form.drug_quantity }}</td>
-                    <td>{{ form.drug_substitution }}</td>
-                    <td>{{ form.refills }}</td>
-                {% endfor %}
-            </tbody>
-        </table><br>
-        {{ rxform.management_form }}
-        <input class="myButton" type="submit" value="Update" name="update">
-        <input class="myButton" type="submit" value="Delete" name="delete">
-        <input class="myButton" type="button" value="Cancel" onClick="history.go(-1);return true;">
-        <input class="myButton" type="reset" value="Clear">
-    </form>
+                    <tbody>
+                        {% for form in rxform.forms %}
+                            <tr id="{{ form.prefix }}-row">
+                                <td>
+                                    {% for fld in form.hidden_fields %}{{ fld }}{% endfor %}
+                                    {% if form.instance.pk %}{{ form.DELETE }}{% endif %}
+                                    {{ form.drug_name }}
+                                </td>
+                                <td>
+                                    {{ form.drug_form }}
+                                </td>
+                                <td>{{ form.drug_schedule }}</td>
+                                <td>{{ form.drug_quantity }}</td>
+                                <td>{{ form.drug_substitution }}</td>
+                                <td>{{ form.refills }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {{ rxform.management_form }}
 
-<br>
-<hr>
-<p>Current Prescription page.</p>
-</body>
+            <input type="submit" class="btn btn-warning" value="Update" name="update">
+            <input type="button" class="btn btn-info"  value="Cancel" onClick="history.go(-1);return true;">
+            <input type="reset" class="btn btn-info"  value="Reset">
+            <input type="submit" class="btn btn-danger" value="Delete" name="delete">
+        </form>
+
+        </div> <!-- container -->
+        <br><hr>
+        <p><small>Update Prescription page</small></p>
+    </body>
 </html>

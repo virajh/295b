@@ -95,7 +95,7 @@
                 </div>
 
                 <h4>Drugs</h4>
-                <table class="table table-bordered table-hover">
+                <table class="table table-bordered table-hover" id="id_drugs_table">
                     <thead>
                         <tr>
                             <th scope="col">Drug & Concentration</th>
@@ -124,6 +124,7 @@
                         {% endfor %}
                     </tbody>
                 </table>
+            {{ rxform.management_form }}
 
             <input type="submit" class="btn btn-warning" value="Update" name="update">
             <input type="button" class="btn btn-info"  value="Cancel" onClick="history.go(-1);return true;">

@@ -40,7 +40,7 @@ class PrescriptionForm(ModelForm):
 
 
 #RxEntry form
-RxEntryForm = inlineformset_factory(Prescription, RxEntry, can_delete=True, extra=4)
+RxEntryForm = inlineformset_factory(Prescription, RxEntry, can_delete=True, extra=1)
 
 
 #PatientMedicalHistory form
