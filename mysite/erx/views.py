@@ -239,7 +239,7 @@ def handlePatient(request, patient_id):
         if form.is_valid():
             form.save()
             return prescriberPatient(request, p_id=patient_id,
-                message='%s Patient profile for %s updated successfully.' % (strftime("%Y-%m-%d %H:%M:%S"), patient))
+                message='[%s] Patient profile for %s updated successfully.' % (strftime("%Y-%m-%d %H:%M:%S"), patient))
         else:
             return render_to_response('erx/done.html', {'message': 'Patient %s not saved.\nErrors: %s ' % (patient, form.errors)},
                 context_instance=RequestContext(request))
@@ -336,18 +336,15 @@ def handlePharmacy(request, pharmacy_id):
     if request.method == 'GET':
         pharmacy = get_object_or_404(Pharmacy, pharmacy_id=pharmacy_id)
         form = PharmacyForm(instance=pharmacy)
-        return render_to_response('erx/new_pharmacy.html', {'form': form},
+        return render_to_response('erx/new_pharmacy.html', {'pharmacy': pharmacy, 'form': form},
             context_instance=RequestContext(request))
 
     if request.method == 'POST':
-
-#        if 'update' in request.POST:
         pharmacy = get_object_or_404(Pharmacy, pharmacy_id=pharmacy_id)
         form = PharmacyForm(request.POST, instance=pharmacy)
         if form.is_valid():
             form.save()
-            return render_to_response('erx/done.html', {'message': 'Pharmacy %s saved.' % (pharmacy)},
-                context_instance=RequestContext(request))
+            return pharmacyHome(request, pharmacy=pharmacy_id, message="[%s] %s profile successfully updated." % (strftime("%Y-%m-%d %H:%M:%S"), pharmacy))
         else:
             return render_to_response('erx/done.html', {'message': 'Pharmacy %s not saved.\nErrors: %s ' % (pharmacy, form.errors)},
                 context_instance=RequestContext(request))
