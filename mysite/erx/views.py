@@ -233,26 +233,26 @@ def handlePatient(request, patient_id):
 
     if request.method == 'POST':
 
-        if 'update' in request.POST:
-            patient = get_object_or_404(Patient, patient_id=patient_id)
-            form = PatientForm(request.POST, instance=patient)
-            if form.is_valid():
-                form.save()
-                return prescriberPatient(request, p_id=patient_id,
-                    message='%s Patient profile for %s updated successfully.' % (strftime("%Y-%m-%d %H:%M:%S"), patient))
-            else:
-                return render_to_response('erx/done.html', {'message': 'Patient %s not saved.\nErrors: %s ' % (patient, form.errors)},
-                    context_instance=RequestContext(request))
-
+        #if 'update' in request.POST:
+        patient = get_object_or_404(Patient, patient_id=patient_id)
+        form = PatientForm(request.POST, instance=patient)
+        if form.is_valid():
+            form.save()
+            return prescriberPatient(request, p_id=patient_id,
+                message='%s Patient profile for %s updated successfully.' % (strftime("%Y-%m-%d %H:%M:%S"), patient))
         else:
-            if 'delete' in request.POST:
-                patient = Patient.objects.get(patient_id=patient_id)
-                try:
-                    Patient.objects.filter(patient_id=patient_id).delete()
-                    return prescriberHome(request, patient=patient_id, message='%s Patient profile for %s deleted successfully.' % (strftime("%Y-%m-%d %H:%M:%S"), patient))
-                except Exception as e:
-                    return render_to_response('erx/done.html', {'message': e},
-                        context_instance=RequestContext(request))
+            return render_to_response('erx/done.html', {'message': 'Patient %s not saved.\nErrors: %s ' % (patient, form.errors)},
+                context_instance=RequestContext(request))
+
+        #else:
+        #    if 'delete' in request.POST:
+        #        patient = Patient.objects.get(patient_id=patient_id)
+        #        try:
+        #            Patient.objects.filter(patient_id=patient_id).delete()
+        #            return prescriberHome(request, patient=patient_id, message='%s Patient profile for %s deleted successfully.' % (strftime("%Y-%m-%d %H:%M:%S"), patient))
+        #        except Exception as e:
+        #            return render_to_response('erx/done.html', {'message': e},
+        #                context_instance=RequestContext(request))
 
 
 #get patients by prescriber
