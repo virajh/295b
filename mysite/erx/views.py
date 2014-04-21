@@ -449,26 +449,22 @@ def createPrescriptionForPatient(request, p_id):
                     message="[%s] Prescription %s successfully created." % (strftime("%Y-%m-%d %H:%M:%S"), instance))
 
             else:
-                form = PrescriptionForm(instance=rx)
-                rxforms = RxEntryForm(instance=rx)
-                date_created = rx.created_date
-                date_modified = rx.last_modified
+                patient = Patient.objects.get(patient_id = p_id)
+                prescription = Prescription(patient=patient, prescriber=patient.prescriber)
+                form = PrescriptionForm(request.POST, instance=prescription)
+                rxforms = RxEntryForm(request.POST)
                 message = '[%s] Prescription not created. Errors %s' %(strftime("%Y-%m-%d %H:%M:%S"), rxentry.errors)
-                return render_to_response('erx/new_prescription.html', {'date_created': date_created, 'message': message,
-                                                                        'date_modified': date_modified,
-                                                                        'form': form, 'rxform': rxforms},
+                return render_to_response('erx/new_prescription.html', {'message': message, 'form': form, 'rxform': rxforms},
                     context_instance=RequestContext(request))
 
         else:
             errors = form.errors
-            form = PrescriptionForm(instance=rx)
-            rxforms = RxEntryForm(instance=rx)
-            date_created = rx.created_date
-            date_modified = rx.last_modified
+            patient = Patient.objects.get(patient_id = p_id)
+            prescription = Prescription(patient=patient, prescriber=patient.prescriber)
+            form = PrescriptionForm(request.POST, instance=prescription)
+            rxforms = RxEntryForm(request.POST)
             message = '[%s] Prescription not created. Errors %s' %(strftime("%Y-%m-%d %H:%M:%S"), errors)
-            return render_to_response('erx/new_prescription.html', {'date_created': date_created, 'message': message,
-                                                                    'date_modified': date_modified,
-                                                                    'form': form, 'rxform': rxforms},
+            return render_to_response('erx/new_prescription.html', {'message': message,'form': form, 'rxform': rxforms},
                 context_instance=RequestContext(request))
 
     else:
@@ -494,25 +490,21 @@ def createPrescriptionForPrescriber(request, p_id):
                 return prescriberHome(request, prescriber=p_id, message=message)
 
             else:
-                form = PrescriptionForm(instance=rx)
-                rxforms = RxEntryForm(instance=rx)
-                date_created = rx.created_date
-                date_modified = rx.last_modified
+                prescriber = Prescriber.objects.get(prescriber_id = p_id)
+                prescription = Prescription(prescriber=prescriber)
+                form = PrescriptionForm(request.POST, instance=prescription)
+                rxforms = RxEntryForm(request.POST)
                 message = '[%s] Prescription not created. Errors %s' %(strftime("%Y-%m-%d %H:%M:%S"), rxentry.errors)
-                return render_to_response('erx/new_prescription.html', {'date_created': date_created, 'message': message,
-                                                                        'date_modified': date_modified,
-                                                                        'form': form, 'rxform': rxforms},
+                return render_to_response('erx/new_prescription.html', {'message': message,'form': form, 'rxform': rxforms},
                     context_instance=RequestContext(request))
         else:
             errors = form.errors
-            form = PrescriptionForm(instance=rx)
-            rxforms = RxEntryForm(instance=rx)
-            date_created = rx.created_date
-            date_modified = rx.last_modified
+            prescriber = Prescriber.objects.get(prescriber_id = p_id)
+            prescription = Prescription(prescriber=prescriber)
+            form = PrescriptionForm(request.POST, instance=prescription)
+            rxforms = RxEntryForm(request.POST)
             message = '[%s] Prescription not created. Errors %s' %(strftime("%Y-%m-%d %H:%M:%S"), errors)
-            return render_to_response('erx/new_prescription.html', {'date_created': date_created, 'message': message,
-                                                                    'date_modified': date_modified,
-                                                                    'form': form, 'rxform': rxforms},
+            return render_to_response('erx/new_prescription.html', {'message': message, 'form': form, 'rxform': rxforms},
                 context_instance=RequestContext(request))
     else:
         if request.method == "GET":
