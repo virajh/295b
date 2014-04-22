@@ -106,7 +106,7 @@ def handlePrescriber(request, prescriber_id):
             p_basic, p_contact = fields[:5], fields[5:]
             return render_to_response('erx/new_prescriber.html',
                 {'prescriber': prescriber, 'p_basic': p_basic, 'p_contact': p_contact,
-                 'message': '[%s] Prescriber %s not saved. Errors: %s ' % (strftime("%Y-%m-%d %H:%M:%S"), prescriber, form.errors)},
+                 'message': 'Errors: %s ' % (form.errors) },
                 context_instance=RequestContext(request))
 
 #        else:
@@ -176,7 +176,7 @@ def createPatientForPrescriber(request, p_id):
            p_contact = fields[12:]
            return render_to_response('erx/new_patient.html',
                 {'p_basic': p_basic, 'p_med': p_med,'p_contact': p_contact,
-                 'message': '[%s] Patient creation failed. Errors: %s' % (strftime("%Y-%m-%d %H:%M:%S"), form.errors)},
+                 'message': 'Errors: %s' % (form.errors)},
             context_instance=RequestContext(request))
 
     else:
@@ -254,8 +254,7 @@ def handlePatient(request, patient_id):
             return render_to_response('erx/update_patient.html',
                     {'patient': patient,'p_basic': p_basic, 'p_med': p_med,
                      'p_contact': p_contact, 'form': form,
-                     'message': '[%s] Patient %s not saved. Errors: %s' %
-                        (strftime("%Y-%m-%d %H:%M:%S"), patient, form.errors)},
+                     'message': 'Errors: %s' % (form.errors) },
                 context_instance=RequestContext(request))
 
         #else:
@@ -363,7 +362,7 @@ def handlePharmacy(request, pharmacy_id):
         else:
             return render_to_response('erx/new_pharmacy.html',
                 {'pharmacy': pharmacy, 'form': form,
-                 'message': '[%s] Pharmacy %s not saved. Errors: %s' % (strftime("%Y-%m-%d %H:%M:%S"), pharmacy, form.errors)},
+                 'message': 'Errors: %s' % (form.errors)},
                 context_instance=RequestContext(request))
 
 #        else:#to do
@@ -437,6 +436,16 @@ def dispenseRx(request, p_id):
 def createPrescriptionForPatient(request, p_id):
 
     if request.method == "POST":
+        patient = Patient.objects.get(patient_id = p_id)
+        pin = patient.prescriber.pin_code
+
+        if not request.POST['pin'] or not request.POST['pin'] == pin:            
+            prescription = Prescription(patient=patient, prescriber=patient.prescriber)
+            form = PrescriptionForm(instance=prescription)
+            message = "Error: Invalid PIN CODE provided."
+            return render_to_response('erx/new_prescription.html', 
+                {'form': form, 'rxform': RxEntryForm, 'message': message}, context_instance=RequestContext(request))
+
         form = PrescriptionForm(request.POST)
 
         if form.is_valid():
@@ -453,7 +462,7 @@ def createPrescriptionForPatient(request, p_id):
                 prescription = Prescription(patient=patient, prescriber=patient.prescriber)
                 form = PrescriptionForm(request.POST, instance=prescription)
                 rxforms = RxEntryForm(request.POST)
-                message = '[%s] Prescription not created. Errors %s' %(strftime("%Y-%m-%d %H:%M:%S"), rxentry.errors)
+                message = 'Errors: %s' %(rxentry.errors)
                 return render_to_response('erx/new_prescription.html', {'message': message, 'form': form, 'rxform': rxforms},
                     context_instance=RequestContext(request))
 
@@ -463,7 +472,7 @@ def createPrescriptionForPatient(request, p_id):
             prescription = Prescription(patient=patient, prescriber=patient.prescriber)
             form = PrescriptionForm(request.POST, instance=prescription)
             rxforms = RxEntryForm(request.POST)
-            message = '[%s] Prescription not created. Errors %s' %(strftime("%Y-%m-%d %H:%M:%S"), errors)
+            message = 'Errors: %s' %(errors)
             return render_to_response('erx/new_prescription.html', {'message': message,'form': form, 'rxform': rxforms},
                 context_instance=RequestContext(request))
 
@@ -478,6 +487,15 @@ def createPrescriptionForPatient(request, p_id):
 def createPrescriptionForPrescriber(request, p_id):
 
     if request.method == "POST":
+        if not request.POST['pin'] or not request.POST['pin'] == Prescriber.objects.get(prescriber_id=p_id).pin_code:
+            prescriber = Prescriber.objects.get(prescriber_id = p_id)
+            prescription = Prescription(prescriber=prescriber)
+            form = PrescriptionForm(instance=prescription)
+            message = "Error: Invalid PIN CODE provided."
+            return render_to_response('erx/new_prescription.html',
+                {'message': message, 'form': form, 'rxform': RxEntryForm}, context_instance=RequestContext(request))
+
+
         form = PrescriptionForm(request.POST)
 
         if form.is_valid():
@@ -494,7 +512,7 @@ def createPrescriptionForPrescriber(request, p_id):
                 prescription = Prescription(prescriber=prescriber)
                 form = PrescriptionForm(request.POST, instance=prescription)
                 rxforms = RxEntryForm(request.POST)
-                message = '[%s] Prescription not created. Errors %s' %(strftime("%Y-%m-%d %H:%M:%S"), rxentry.errors)
+                message = 'Errors: %s' % (rxentry.errors)
                 return render_to_response('erx/new_prescription.html', {'message': message,'form': form, 'rxform': rxforms},
                     context_instance=RequestContext(request))
         else:
@@ -503,7 +521,7 @@ def createPrescriptionForPrescriber(request, p_id):
             prescription = Prescription(prescriber=prescriber)
             form = PrescriptionForm(request.POST, instance=prescription)
             rxforms = RxEntryForm(request.POST)
-            message = '[%s] Prescription not created. Errors %s' %(strftime("%Y-%m-%d %H:%M:%S"), errors)
+            message = 'Errors: %s' % (errors)
             return render_to_response('erx/new_prescription.html', {'message': message, 'form': form, 'rxform': rxforms},
                 context_instance=RequestContext(request))
     else:
@@ -595,6 +613,18 @@ def handlePrescription(request, rx_id):
 
     if request.method == 'POST':
         rx = get_object_or_404(Prescription, rx_id=rx_id)
+        pin = rx.prescriber.pin_code
+
+        if not request.POST['pin'] or not request.POST['pin'] == pin:
+            form = PrescriptionForm(instance=rx)
+            rxforms = RxEntryForm(instance=rx)
+            date_created = rx.created_date
+            date_modified = rx.last_modified
+            message = 'Error: Invalid PIN CODE provided.'
+            return render_to_response('erx/cur_prescription.html', {'date_created': date_created, 'message': message,
+                                                                    'date_modified': date_modified,
+                                                                    'form': form, 'rxform': rxforms},
+                context_instance=RequestContext(request))
 
         if 'update' in request.POST:            
             form = PrescriptionForm(request.POST, instance=rx)
@@ -612,7 +642,7 @@ def handlePrescription(request, rx_id):
                     rxforms = RxEntryForm(instance=rx)
                     date_created = rx.created_date
                     date_modified = rx.last_modified
-                    message = '[%s] Prescription not updated. Errors %s' %(strftime("%Y-%m-%d %H:%M:%S"), rxentry.errors)
+                    message = 'Errors: %s' % (rxentry.errors)
                     return render_to_response('erx/cur_prescription.html', {'date_created': date_created, 'message': message,
                                                                             'date_modified': date_modified,
                                                                             'form': form, 'rxform': rxforms},
@@ -623,7 +653,7 @@ def handlePrescription(request, rx_id):
                 rxforms = RxEntryForm(instance=rx)
                 date_created = rx.created_date
                 date_modified = rx.last_modified
-                message = '[%s] Prescription not updated. Errors %s' %(strftime("%Y-%m-%d %H:%M:%S"), errors)
+                message = 'Errors: %s' % (errors)
                 return render_to_response('erx/cur_prescription.html', {'date_created': date_created, 'message': message,
                                                                         'date_modified': date_modified,
                                                                         'form': form, 'rxform': rxforms},

@@ -13,7 +13,7 @@ class PrescriberForm(ModelForm):
         fields = ['first_name', 'middle_name', 'last_name', 'license_id',
                   'pin_code', 'street_address', 'city', 'state', 'zipcode',
                   'telephone', 'email']
-#        widgets = { 'pin_code': forms.PasswordInput(), }
+        widgets = { 'pin_code': forms.PasswordInput(), }
 
 
 #Patient form

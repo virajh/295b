@@ -151,8 +151,8 @@ class Prescription(models.Model):
     patient = models.ForeignKey(Patient)
     pharmacy = models.ForeignKey(Pharmacy)
 
-    sp_instructions = models.CharField(verbose_name='Special Instructions', max_length=2000, blank=True)
-    note = models.CharField(verbose_name='Note to Pharmacy', max_length=2000, blank=True)
+    sp_instructions = models.CharField(verbose_name='Special Instructions', default='Stop after 3 weeks.', max_length=2000, blank=True)
+    note = models.CharField(verbose_name='Note to Pharmacy', max_length=2000, default='Check authorized indentification proof.', blank=True)
 
     created_date = models.DateTimeField(auto_now_add = True)
     last_modified = models.DateTimeField(auto_now=True)

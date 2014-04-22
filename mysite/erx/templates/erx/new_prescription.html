@@ -90,6 +90,7 @@
             <form class="form form-inline" method="post" action=".">{%csrf_token%}
                 <div class="well well-small">
                     {{form.as_p}}
+                    <p class="alert-info">PIN: <input type="password" name="pin"></p>
                 </div>
 
                 <h4>Drugs</h4>
