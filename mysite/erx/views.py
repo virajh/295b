@@ -2,6 +2,9 @@ import sys, copy
 
 from time import strftime
 
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 from django.forms.models import inlineformset_factory
 from django.forms.formsets import formset_factory
 from django.http import HttpResponse
@@ -18,14 +21,44 @@ from erx.models import Prescriber, Patient, Pharmacy, Prescription, RxEntry, Lab
 
 def testView(request, **kwargs):
 
-    rx = Prescription.objects.all()[0]
-    form = PrescriptionForm(instance=rx)
-    rxforms = RxEntryForm(instance=rx)
-    date_created = rx.created_date
-    date_modified = rx.last_modified
-    return render_to_response('erx/bootstrap.html', {'date_created': date_created, 'date_modified': date_modified,
-                                                     'form': form, 'rxform': rxforms, 'prescription': rx},
+    return render_to_response('erx/login.html', {'message': message},
         context_instance=RequestContext(request))
+
+#
+#User authentication 
+#
+def signIn(request):
+    if request.method == 'POST':
+        print "POST: signIn"
+
+        if request.POST['email'] and request.POST['password']:
+            user = authenticate(username=request.POST['email'], password=request.POST['password'])
+            if user:
+                login(request, user)
+                if 'next' in request.POST:
+                    return redirect(request.POST['next'])
+                else:
+                    return HttpResponse("SUCCESS: Logged in.")
+            else:
+                message = "User authentication failed."
+                return render_to_response('erx/login.html', {'message': message}, context_instance=RequestContext(request))
+        else:
+            message = "Missing username or password."
+            return render_to_response('erx/login.html', {'message': message}, context_instance=RequestContext(request))
+    else:
+        print "GET: signIn"
+
+        if 'next' in request.GET:
+            data = {'next': request.GET['next']}
+        else:
+            data = {}
+
+        return render_to_response('erx/login.html', data, context_instance=RequestContext(request))
+#
+#End of User authentication
+#
+
+
 
 #
 #CRUD & Search methods for Prescriber
@@ -418,7 +451,6 @@ def dispenseRx(request, p_id):
                     message='[%s] Prescription %s successfully dispensed.' % (strftime("%Y-%m-%d %H:%M:%S"), rx))
 
             else:
-                print form.errors, "ERROR"
                 if form.non_field_errors:
                     print form.non_field_errors
                 return render_to_response('erx/done.html', {'message': 'Failed', 'errors': form.errors},
