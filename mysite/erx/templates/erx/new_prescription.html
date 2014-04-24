@@ -21,7 +21,13 @@
         <script type="text/javascript">
         $(function() {
             $('#id_drugs_table tbody tr').formset({
-                prefix: '{{ rxform.prefix }}'
+                prefix: '{{ rxform.prefix }}',
+                added: function(row) {
+                    var txt = row.find('.autocomplete-me');
+                    txt.unbind();
+                    makeAutocomplete(txt);
+                }
+
             });
 
             var drugForms = [
@@ -112,7 +118,10 @@
                                 <td>
                                     {% for fld in form.hidden_fields %}{{ fld }}{% endfor %}
                                     {% if form.instance.pk %}{{ form.DELETE }}{% endif %}
-                                    {{ form.drug_name }}
+                                    <div class="ui-widget">
+                                        {{ form.drug_name }}
+                                    </div>
+
                                 </td>
                                 <td>
                                     {{ form.drug_form }}

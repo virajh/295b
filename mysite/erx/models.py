@@ -212,8 +212,17 @@ class RxEntry(models.Model):
 #End of RxEntry
 #
 
-class Drug:
-    pass
+class Drug(models.Model):
+    drug_id = models.AutoField(primary_key=True)
+    name = models.CharField(verbose_name='Name', max_length=200, unique=True)
+
+    def __unicode__(self):
+        return self.name
+
+    def __init__(self, **kwargs):
+        super(Drug, self).__init__()
+        if 'name' in kwargs:
+            self.name = kwargs['name']
 
 #
 #Lab Test Object

@@ -3,7 +3,7 @@ from django.db import models
 from django.forms import fields, models, formsets, widgets, ModelForm
 from django.forms.models import inlineformset_factory
 
-from erx.models import Prescriber, Patient, Pharmacy, Prescription, RxEntry, MedicalHistory, LabTest, LabHistory
+from erx.models import Prescriber, Patient, Pharmacy, Prescription, RxEntry, MedicalHistory, LabTest, LabHistory, Drug
 
 
 #Prescriber form
@@ -77,3 +77,8 @@ class LabHistoryForm(ModelForm):
     class Meta:
         model = LabHistory
 
+
+#Drug form
+class DrugForm(ModelForm):
+    class Meta:
+        model = Drug

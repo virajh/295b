@@ -20,7 +20,13 @@
         <script type="text/javascript">
         $(function() {
             $('#id_drugs_table tbody tr').formset({
-                prefix: '{{ rxform.prefix }}'
+                prefix: '{{ rxform.prefix }}',
+                added: function(row) {
+                    var txt = row.find('.autocomplete-me');
+                    txt.unbind();
+                    makeAutocomplete(txt);
+                }
+
             });
 
             var drugForms = [
