@@ -3,27 +3,26 @@
     <head>
         {% load url from future %}
         <!-- Le styles -->
-        <link href="{{STATIC_URL}}/css/bootstrap/css/bootstrap.css" rel="stylesheet">
-        <script type="text/javascript" src="{{STATIC_URL}}/css/bootstrap/js/jquery-1.7.js"></script>
-        <script type="text/javascript" src="{{STATIC_URL}}/css/bootstrap/js/bootstrap.js"></script>
+    	<link rel="stylesheet" href="{{STATIC_URL}}css/base/jquery.ui.all.css">
+    	<link rel="stylesheet" href="{{STATIC_URL}}css/base/demos.css">
+        <link href="{{STATIC_URL}}css/bootstrap/css/bootstrap.css" rel="stylesheet">
+
+        <script type="text/javascript" src="{{STATIC_URL}}css/bootstrap/js/jquery-1.7.js"></script>
+        <script type="text/javascript" src="{{STATIC_URL}}css/bootstrap/js/bootstrap.js"></script>
         <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.ui.core.js"></script>
         <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.ui.widget.js"></script>
         <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.ui.position.js"></script>
         <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.ui.menu.js"></script>
         <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.ui.autocomplete.js"></script>
-        <script type="text/javascript" src="{{ STATIC_URL }}js/jquery-1.11.0.js"></script>
+        <!--<script type="text/javascript" src="{{ STATIC_URL }}js/jquery-1.11.0.js"></script>-->
         <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.formset.js"></script>
         {{ rxform.media }}
         <script type="text/javascript">
         $(function() {
             $('#id_drugs_table tbody tr').formset({
-                prefix: '{{ rxform.prefix }}',
-                added: function(row) {
-                    var txt = row.find('.autocomplete-me');
-                    txt.unbind();
-                    makeAutocomplete(txt);
-                }
+                prefix: '{{ rxform.prefix }}'
             });
+
             var drugForms = [
 			        "Intravenous Injection",
 			        "Injectable Solution",
@@ -68,8 +67,8 @@
 			        source: drugForms
 		        });
         });
-
         </script>
+
         <title>Update Prescription</title>
     </head>
  
@@ -118,7 +117,9 @@
                                     {{ form.drug_name }}
                                 </td>
                                 <td>
-                                    {{ form.drug_form }}
+                                    <div class="ui-widget">
+                                        {{ form.drug_form }}
+                                    </div>
                                 </td>
                                 <td>{{ form.drug_schedule }}</td>
                                 <td>{{ form.drug_quantity }}</td>

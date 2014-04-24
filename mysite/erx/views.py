@@ -12,9 +12,11 @@ from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
 from django.views import generic
 
+from erx.forms import PrescriberForm, PatientForm, PharmacyForm
+from erx.forms import PrescriptionForm, RxEntryForm, LabTestForm, LabHistoryForm, AutoRxEntryForm
+from erx.forms import get_ordereditem_formset
 
-from erx.forms import PrescriberForm, PatientForm, PharmacyForm, PrescriptionForm, RxEntryForm, LabTestForm, LabHistoryForm
-from erx.models import Prescriber, Patient, Pharmacy, Prescription, RxEntry, LabTest, LabHistory
+from erx.models import Prescriber, Patient, Pharmacy, Prescription, RxEntry, LabTest, LabHistory, Drug
 #from erx.models import Rxnconso
 
 #Create your views here.
@@ -23,6 +25,19 @@ def testView(request, **kwargs):
 
     return render_to_response('erx/login.html', {'message': message},
         context_instance=RequestContext(request))
+
+#
+#Autocomplete Drug methods
+#
+def autocompleteDrug(request):
+    print 'here'
+    q = request.GET.get('q', '')
+    products = Drug.objects.filter(name__icontains=q).values_list('pk', 'name')
+    output = u'\n'.join([u'%d|%s' % tuple(product) for product in products])
+    return HttpResponse(output, mimetype='text/plain')
+#
+#End of autocomplete
+#
 
 #
 #User authentication 
@@ -467,22 +482,25 @@ def dispenseRx(request, p_id):
 #create new prescription for patient
 def createPrescriptionForPatient(request, p_id):
 
+    ItemFormSet = get_ordereditem_formset(AutoRxEntryForm, extra=2, can_delete=True)
+
     if request.method == "POST":
         patient = Patient.objects.get(patient_id = p_id)
         pin = patient.prescriber.pin_code
 
         if not request.POST['pin'] or not request.POST['pin'] == pin:            
             prescription = Prescription(patient=patient, prescriber=patient.prescriber)
-            form = PrescriptionForm(instance=prescription)
+            form = PrescriptionForm(request.POST, instance=prescription)
+            formset = ItemFormSet(request.POST)
             message = "Error: Invalid PIN CODE provided."
             return render_to_response('erx/new_prescription.html', 
-                {'form': form, 'rxform': RxEntryForm, 'message': message}, context_instance=RequestContext(request))
+                {'form': form, 'rxform': formset, 'message': message}, context_instance=RequestContext(request))
 
         form = PrescriptionForm(request.POST)
 
         if form.is_valid():
             instance=form.save()
-            rxentry = RxEntryForm(request.POST, instance=instance)
+            rxentry = ItemFormSet(request.POST, instance=instance)
             
             if rxentry.is_valid():
                 rxentry.save()
@@ -493,9 +511,9 @@ def createPrescriptionForPatient(request, p_id):
                 patient = Patient.objects.get(patient_id = p_id)
                 prescription = Prescription(patient=patient, prescriber=patient.prescriber)
                 form = PrescriptionForm(request.POST, instance=prescription)
-                rxforms = RxEntryForm(request.POST)
+                formset = ItemFormSet(request.POST)
                 message = 'Errors: %s' %(rxentry.errors)
-                return render_to_response('erx/new_prescription.html', {'message': message, 'form': form, 'rxform': rxforms},
+                return render_to_response('erx/new_prescription.html', {'message': message, 'form': form, 'rxform': formset},
                     context_instance=RequestContext(request))
 
         else:
@@ -503,9 +521,9 @@ def createPrescriptionForPatient(request, p_id):
             patient = Patient.objects.get(patient_id = p_id)
             prescription = Prescription(patient=patient, prescriber=patient.prescriber)
             form = PrescriptionForm(request.POST, instance=prescription)
-            rxforms = RxEntryForm(request.POST)
+            formset = ItemFormSet(request.POST)
             message = 'Errors: %s' %(errors)
-            return render_to_response('erx/new_prescription.html', {'message': message,'form': form, 'rxform': rxforms},
+            return render_to_response('erx/new_prescription.html', {'message': message,'form': form, 'rxform': formset},
                 context_instance=RequestContext(request))
 
     else:
@@ -513,26 +531,30 @@ def createPrescriptionForPatient(request, p_id):
             patient = Patient.objects.get(patient_id = p_id)
             prescription = Prescription(patient=patient, prescriber=patient.prescriber)
             form = PrescriptionForm(instance=prescription)
-            return render_to_response('erx/new_prescription.html', {'form': form, 'rxform': RxEntryForm}, context_instance=RequestContext(request))
+            formset = ItemFormSet(instance=prescription)
+            return render_to_response('erx/new_prescription.html', {'form': form, 'rxform': formset},
+                context_instance=RequestContext(request))
 
 #create new prescription for prescriber
 def createPrescriptionForPrescriber(request, p_id):
+
+    ItemFormSet = get_ordereditem_formset(AutoRxEntryForm, extra=2, can_delete=True)
 
     if request.method == "POST":
         if not request.POST['pin'] or not request.POST['pin'] == Prescriber.objects.get(prescriber_id=p_id).pin_code:
             prescriber = Prescriber.objects.get(prescriber_id = p_id)
             prescription = Prescription(prescriber=prescriber)
-            form = PrescriptionForm(instance=prescription)
+            form = PrescriptionForm(request.POST, instance=prescription)
+            formset = ItemFormSet(request.POST)
             message = "Error: Invalid PIN CODE provided."
             return render_to_response('erx/new_prescription.html',
-                {'message': message, 'form': form, 'rxform': RxEntryForm}, context_instance=RequestContext(request))
-
+                {'message': message, 'form': form, 'rxform': formset}, context_instance=RequestContext(request))
 
         form = PrescriptionForm(request.POST)
 
         if form.is_valid():
             instance=form.save()
-            rxentry = RxEntryForm(request.POST, instance=instance)
+            rxentry = ItemFormSet(request.POST, instance=instance)
             
             if rxentry.is_valid():
                 rxentry.save()
@@ -543,7 +565,7 @@ def createPrescriptionForPrescriber(request, p_id):
                 prescriber = Prescriber.objects.get(prescriber_id = p_id)
                 prescription = Prescription(prescriber=prescriber)
                 form = PrescriptionForm(request.POST, instance=prescription)
-                rxforms = RxEntryForm(request.POST)
+                rxforms = ItemFormSet(request.POST)
                 message = 'Errors: %s' % (rxentry.errors)
                 return render_to_response('erx/new_prescription.html', {'message': message,'form': form, 'rxform': rxforms},
                     context_instance=RequestContext(request))
@@ -552,7 +574,7 @@ def createPrescriptionForPrescriber(request, p_id):
             prescriber = Prescriber.objects.get(prescriber_id = p_id)
             prescription = Prescription(prescriber=prescriber)
             form = PrescriptionForm(request.POST, instance=prescription)
-            rxforms = RxEntryForm(request.POST)
+            rxforms = ItemFormSet(request.POST)
             message = 'Errors: %s' % (errors)
             return render_to_response('erx/new_prescription.html', {'message': message, 'form': form, 'rxform': rxforms},
                 context_instance=RequestContext(request))
@@ -561,7 +583,9 @@ def createPrescriptionForPrescriber(request, p_id):
             prescriber = Prescriber.objects.get(prescriber_id = p_id)
             prescription = Prescription(prescriber=prescriber)
             form = PrescriptionForm(instance=prescription)
-            return render_to_response('erx/new_prescription.html', {'form': form, 'rxform': RxEntryForm}, context_instance=RequestContext(request))
+            formset = ItemFormSet(instance=prescription)
+            return render_to_response('erx/new_prescription.html', {'form': form, 'rxform': formset},
+                context_instance=RequestContext(request))
 
 
 #create new prescription
@@ -631,16 +655,18 @@ def getDispensedRx(request, p_id):
 #handle prescription: GET using ID, POST, DELETE
 def handlePrescription(request, rx_id):
 
+    ItemFormSet = get_ordereditem_formset(AutoRxEntryForm, extra=2, can_delete=True)
+
     if request.method == 'GET':
         rx = get_object_or_404(Prescription, rx_id=rx_id)
 
         form = PrescriptionForm(instance=rx)
-        rxforms = RxEntryForm(instance=rx)
+        formset = ItemFormSet(instance=rx)
         date_created = rx.created_date
         date_modified = rx.last_modified
         return render_to_response('erx/cur_prescription.html', {'date_created': date_created,
                                                                 'date_modified': date_modified,
-                                                                'form': form, 'rxform': rxforms},
+                                                                'form': form, 'rxform': formset},
             context_instance=RequestContext(request))
 
     if request.method == 'POST':
@@ -648,14 +674,14 @@ def handlePrescription(request, rx_id):
         pin = rx.prescriber.pin_code
 
         if not request.POST['pin'] or not request.POST['pin'] == pin:
-            form = PrescriptionForm(instance=rx)
-            rxforms = RxEntryForm(instance=rx)
+            form = PrescriptionForm(request.POST, instance=rx)
+            formset = ItemFormSet(request.POST, instance=rx)
             date_created = rx.created_date
             date_modified = rx.last_modified
             message = 'Error: Invalid PIN CODE provided.'
             return render_to_response('erx/cur_prescription.html', {'date_created': date_created, 'message': message,
                                                                     'date_modified': date_modified,
-                                                                    'form': form, 'rxform': rxforms},
+                                                                    'form': form, 'rxform': formset},
                 context_instance=RequestContext(request))
 
         if 'update' in request.POST:            
@@ -663,32 +689,32 @@ def handlePrescription(request, rx_id):
 
             if form.is_valid():
                 instance=form.save()
-                rxentry = RxEntryForm(request.POST, instance=instance)
+                rxentry = ItemFormSet(request.POST, instance=instance)
 
                 if rxentry.is_valid():
                     rxentry.save()
                     return prescriberHome(request, prescription=rx_id,
                         message='[%s] Prescription %s successfully updated.' %(strftime("%Y-%m-%d %H:%M:%S"), rx))
                 else:
-                    form = PrescriptionForm(instance=rx)
-                    rxforms = RxEntryForm(instance=rx)
+                    form = PrescriptionForm(request.POST, instance=rx)
+                    formset = ItemFormSet(request.POST, instance=rx)
                     date_created = rx.created_date
                     date_modified = rx.last_modified
                     message = 'Errors: %s' % (rxentry.errors)
                     return render_to_response('erx/cur_prescription.html', {'date_created': date_created, 'message': message,
                                                                             'date_modified': date_modified,
-                                                                            'form': form, 'rxform': rxforms},
+                                                                            'form': form, 'rxform': formset},
                         context_instance=RequestContext(request))
             else:
                 errors = form.errors
-                form = PrescriptionForm(instance=rx)
-                rxforms = RxEntryForm(instance=rx)
+                form = PrescriptionForm(request.POST, instance=rx)
+                formset = ItemFormSet(request.POST, instance=rx)
                 date_created = rx.created_date
                 date_modified = rx.last_modified
                 message = 'Errors: %s' % (errors)
                 return render_to_response('erx/cur_prescription.html', {'date_created': date_created, 'message': message,
                                                                         'date_modified': date_modified,
-                                                                        'form': form, 'rxform': rxforms},
+                                                                        'form': form, 'rxform': formset},
                     context_instance=RequestContext(request))
 
         else:

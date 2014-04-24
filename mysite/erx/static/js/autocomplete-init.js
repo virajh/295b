@@ -1,6 +1,6 @@
 
 function makeAutocomplete(sel) {
-    sel.autocomplete('/examples/autocomplete-products/', {
+    sel.autocomplete('/erx/autocomplete-drug/', {
         delay: 200,
         formatItem: function(row) {
             return row[1];

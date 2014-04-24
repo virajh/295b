@@ -1,6 +1,6 @@
 from django import forms
 from django.db import models
-from django.forms import ModelForm
+from django.forms import fields, models, formsets, widgets, ModelForm
 from django.forms.models import inlineformset_factory
 
 from erx.models import Prescriber, Patient, Pharmacy, Prescription, RxEntry, MedicalHistory, LabTest, LabHistory
@@ -40,7 +40,24 @@ class PrescriptionForm(ModelForm):
 
 
 #RxEntry form
-RxEntryForm = inlineformset_factory(Prescription, RxEntry, can_delete=True, extra=1)
+RxEntryForm = inlineformset_factory(Prescription, RxEntry, can_delete=True, extra=4)
+
+def get_ordereditem_formset(form, formset=models.BaseInlineFormSet, **kwargs):
+    return models.inlineformset_factory(Prescription, RxEntry, form, formset, **kwargs)
+
+class AutoRxEntryForm(ModelForm):
+    class Meta:
+        model = RxEntry
+
+    class Media:
+        js = ('js/jquery.autocomplete.min.js', 'js/autocomplete-init.js',)
+        css = {
+            'all': ('css/jquery.autocomplete.css',),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super(AutoRxEntryForm, self).__init__(*args, **kwargs)
+        self.fields['drug_name'].widget = widgets.TextInput(attrs={'class': 'autocomplete-me'})
 
 
 #PatientMedicalHistory form

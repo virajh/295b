@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <link href="{{STATIC_URL}}/css/bootstrap/css/bootstrap.css" rel="stylesheet">
+        <script type="text/javascript" src="{{STATIC_URL}}/css/bootstrap/js/jquery-1.7.js"></script>
+        <script type="text/javascript" src="{{STATIC_URL}}/css/bootstrap/js/bootstrap.js"></script>
+        <title>Login Page</title>
+    </head>
+
+    <body>
+        <style type="text/css">
+          /* Override some defaults */
+          html, body {
+            background-color: #eee;
+          }
+          body {
+            padding-top: 40px; 
+          }
+          .container {
+            width: 300px;
+          }
+
+          /* The white background content wrapper */
+          .container > .content {
+            background-color: #fff;
+            padding: 20px;
+            margin: 0 -20px; 
+            -webkit-border-radius: 10px 10px 10px 10px;
+               -moz-border-radius: 10px 10px 10px 10px;
+                    border-radius: 10px 10px 10px 10px;
+            -webkit-box-shadow: 0 1px 2px rgba(0,0,0,.15);
+               -moz-box-shadow: 0 1px 2px rgba(0,0,0,.15);
+                    box-shadow: 0 1px 2px rgba(0,0,0,.15);
+          }
+
+          .login-form {
+            margin-left: 65px;
+          }
+
+          legend {
+            margin-right: -50px;
+            font-weight: bold;
+              color: #404040;
+          }
+        </style>
+        <blockquote>
+            <h1>ePrescription-as-a-Service</h1>
+        </blockquote>
+
+        <div class="container">
+
+                {% if message %}
+                    <div class="alert alert-error">
+                        <button type="button" class="close" data-dismiss="alert">&times;</button>
+                        <strong>Error! </strong>{{message}}
+                    </div>
+                {% endif %}
+
+            <div class="content">
+                <div class="row">
+                    <div class="login-form">
+                        <h2>Login</h2>
+                        <form action="" method="post">{%csrf_token%}
+                            <fieldset>
+                                <div class="control-group">
+                                    <input type="email" placeholder="Username" name="email">
+                                </div>
+
+                                <div class="control-group">
+                                    <input type="password" placeholder="Password" name="password">
+                                </div>
+
+                                <button class="btn btn-success" type="submit">Sign in</button>
+                                <a class="btn btn-info" href="/erx/register">Register</a>
+                            </fieldset>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+        </div><!--container-->
+    </body>
+</html>
