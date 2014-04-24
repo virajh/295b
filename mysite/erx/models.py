@@ -197,7 +197,7 @@ form_choices = (
 
 class RxEntry(models.Model):
 
-    drug_name = models.CharField(verbose_name='Drug with concentration', max_length=200)
+    drug_name = models.CharField(verbose_name='Drug & Concentration', max_length=200)
     drug_form = models.CharField(verbose_name='Drug Form', max_length=50)
     drug_schedule = models.CharField(verbose_name='Dosage Instructions', max_length=2000)    
     drug_quantity = models.CharField(verbose_name='Dosage Amount', max_length=2000)

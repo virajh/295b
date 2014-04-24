@@ -1,3 +1,4 @@
+from erx.models import Drug
 Drug(name='Amyl Nitrite 0.3 ML').save()
 Drug(name='Amyl Nitrite 0.3 ML').save()
 Drug(name='Dianeal PD-2/4.25 2500 ML').save()

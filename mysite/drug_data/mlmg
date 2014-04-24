@@ -1,3 +1,4 @@
+from erx.models import Drug
 Drug(name='Alprostadil 0.01 MG/ML').save()
 Drug(name='Caverject 0.01 MG/ML').save()
 Drug(name='Granisetron 1 MG/ML').save()
