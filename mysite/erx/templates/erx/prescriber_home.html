@@ -34,19 +34,17 @@
                     </div>
                 {% endif %}
 
-
                 <div id="my-tab-content" class="tab-content">
+
                     <div class="tab-pane active" id="patient">
                         <h3>Patients</h3>
                         <p>Hi, this is the Patients tab.</p>
                         <div class="well">
-
                                 {% for patient in my_patients %}
                                     <li>
                                         <a href="{% url 'erx:prescriber_select_patient' patient.patient_id %}">{{ patient }}</a>
                                     </li><br>
                                 {% endfor %}
-
                         </div>
                         <a href="/erx/patient/newForPrescriber/{{ prescriber.prescriber_id }}" class="btn btn-info">New Patient</a>
                     </div>
