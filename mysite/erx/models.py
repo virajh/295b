@@ -211,6 +211,16 @@ class RxEntry(models.Model):
 #
 #End of RxEntry
 #
+class NDF(models.Model):
+    drug_id = models.AutoField(primary_key=True)
+    nui = models.CharField(verbose_name='NUI', max_length=50, unique=True)
+    data = models.CharField(verbose_name='Data', max_length=200, unique=True)
+
+    def __unicode__(self):
+        return self.data
+
+    def getID(self):
+        return self.nui
 
 class Drug(models.Model):
     drug_id = models.AutoField(primary_key=True)

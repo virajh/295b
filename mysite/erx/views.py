@@ -30,12 +30,9 @@ def testView(request, **kwargs):
 #Autocomplete Drug methods
 #
 def autocompleteDrug(request):
-    print 'here'
     q = request.GET.get('q', '')
     products = Drug.objects.filter(name__icontains=q).values_list('name', 'name')
-    print products, type(products)
     output = u'\n'.join([u'%s|%s' % tuple(product) for product in products])
-
     return HttpResponse(output, mimetype='text/plain')
 #
 #End of autocomplete
