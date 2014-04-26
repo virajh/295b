@@ -47,7 +47,6 @@ def checkInteractions(drug_list):
     if len(drug_list) < 2:
         return False
 
-    size = len(drug_list)
     for drug1, drug2 in pairwise(drug_list):
         nui1 = ndf_api.getNui(drug1)
         nui2 = ndf_api.getNui(drug2)
@@ -533,9 +532,30 @@ def createPrescriptionForPatient(request, p_id):
             rxentry = ItemFormSet(request.POST, instance=instance)
             
             if rxentry.is_valid():
-                rxentry.save()
-                return prescriberHome(request, patient=p_id,
-                    message="[%s] Prescription %s successfully created." % (strftime("%Y-%m-%d %H:%M:%S"), instance))
+
+                drug_list = []
+                for form in rxentry:
+                    if form.cleaned_data.get('drug_name') is not None:
+                        drug_list.append(form.cleaned_data.get('drug_name'))
+
+                flag = checkInteractions(drug_list)
+
+                if flag == False:
+                    rxentry.save()
+                    return prescriberHome(request, patient=p_id,
+                        message="[%s] Prescription %s successfully created." % (strftime("%Y-%m-%d %H:%M:%S"), instance))
+
+                else:
+                    if flag == True:
+                        message = 'Prescription not saved. Drug interactions have been detected.'  
+                    else:
+                        message = flag
+                    patient = Patient.objects.get(patient_id = p_id)
+                    prescription = Prescription(patient=patient, prescriber=patient.prescriber)
+                    form = PrescriptionForm(request.POST, instance=prescription)
+                    formset = ItemFormSet(request.POST)
+                    return render_to_response('erx/new_prescription.html', {'message': message, 'form': form, 'rxform': formset},
+                        context_instance=RequestContext(request))
 
             else:
                 patient = Patient.objects.get(patient_id = p_id)
@@ -587,9 +607,30 @@ def createPrescriptionForPrescriber(request, p_id):
             rxentry = ItemFormSet(request.POST, instance=instance)
             
             if rxentry.is_valid():
-                rxentry.save()
-                message="[%s] Prescription %s successfully created." % (strftime("%Y-%m-%d %H:%M:%S"), instance)
-                return prescriberHome(request, prescriber=p_id, message=message)
+                drug_list = []
+                for form in rxentry:
+                    if form.cleaned_data.get('drug_name') is not None:
+                        drug_list.append(form.cleaned_data.get('drug_name'))
+
+                flag = checkInteractions(drug_list)
+
+                if flag == False:
+                    rxentry.save()
+                    message="[%s] Prescription %s successfully created." % (strftime("%Y-%m-%d %H:%M:%S"), instance)
+                    return prescriberHome(request, prescriber=p_id, message=message)
+
+                else:
+                    if flag == True:
+                        message = 'Prescription not saved. Drug interactions have been detected.'
+                    else:
+                        message = flag
+                    prescriber = Prescriber.objects.get(prescriber_id = p_id)
+                    prescription = Prescription(prescriber=prescriber)
+                    form = PrescriptionForm(request.POST, instance=prescription)
+                    rxforms = ItemFormSet(request.POST)
+                    return render_to_response('erx/new_prescription.html', {'message': message,'form': form, 'rxform': rxforms},
+                        context_instance=RequestContext(request))
+
 
             else:
                 prescriber = Prescriber.objects.get(prescriber_id = p_id)
