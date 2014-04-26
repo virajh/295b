@@ -25,27 +25,33 @@ def writeToFile(divider, row):
         drugFile = open('drug', 'a')
         k = arr.index(divider)
         i = 0
-        data = ""
-        while (i <= k):
-            data += "%s " %(arr[i])
-            i += 1
-        print data
-        word = "Drug(name='%s').save()" % (data.rstrip())
-        drugFile.write(word)
-        drugFile.write('\n')
-        drugFile.close()
+        if arr[0][0].isalpha():
+            data = ""
+            while (i <= k):
+                data += "%s " %(arr[i])
+                i += 1
+            if len(data) < 50:
+                print data
+                word = "Drug(name='%s').save()" % (data.rstrip())
+                drugFile.write(word)
+                drugFile.write('\n')
+                drugFile.close()
+            else:
+                pass
+        else:
+            pass
     except:
         pass
 
 
 # print all the first cell of all the rows
 for row in cur.fetchall():
-#    if 'MG/ML' in row[0]:
-#        writeToFile('MG/ML', row)
+    if 'MG/ML' in row[0]:
+        writeToFile('MG/ML', row)
 
 #    if 'MG' in row[0]:
 #        writeToFile('MG', row)
 
-    if 'ML' in row[0]:
-        writeToFile('ML', row)
+#    if 'ML' in row[0]:
+#        writeToFile('ML', row)
 
