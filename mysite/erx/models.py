@@ -211,6 +211,10 @@ class RxEntry(models.Model):
 #
 #End of RxEntry
 #
+
+#
+#Helper classes for Drug-Drug Interactions
+#
 class NDF(models.Model):
     drug_id = models.AutoField(primary_key=True)
     nui = models.CharField(verbose_name='NUI', max_length=50, unique=True)
@@ -233,6 +237,10 @@ class Drug(models.Model):
         super(Drug, self).__init__()
         if 'name' in kwargs:
             self.name = kwargs['name']
+
+#
+#End of helper classes
+#
 
 #
 #Lab Test Object

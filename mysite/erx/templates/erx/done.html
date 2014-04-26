@@ -1,7 +1,7 @@
 <html>
 {% load url from future %}
 <h1> {{ message }} </h1>
-
+<title>DONE</title>
 
 {% for drug in list %}
 <li>
@@ -45,6 +45,9 @@
     <hr><br>
 {% endfor %}
 
+{% if NUI %}
+    {{NUI}}
+{% endif %}
 <br><br><hr><p>Done page.</p>
 </body>
 </html>

@@ -1,4 +1,4 @@
-import sys, copy
+import sys, copy, itertools
 
 from time import strftime
 
@@ -16,14 +16,15 @@ from erx.forms import PrescriberForm, PatientForm, PharmacyForm
 from erx.forms import PrescriptionForm, RxEntryForm, LabTestForm, LabHistoryForm, AutoRxEntryForm
 from erx.forms import get_ordereditem_formset
 
-from erx.models import Prescriber, Patient, Pharmacy, Prescription, RxEntry, LabTest, LabHistory, Drug
+from erx.models import Prescriber, Patient, Pharmacy, Prescription, RxEntry, LabTest, LabHistory, Drug, NDF
+
+from erx import ndf_api
 #from erx.models import Rxnconso
 
 #Create your views here.
 
 def testView(request, **kwargs):
-
-    return render_to_response('erx/login.html', {'message': message},
+    return render_to_response('erx/done.html', {'NUI': getNUI('SULFINPYRAZONE')},
         context_instance=RequestContext(request))
 
 #
@@ -36,6 +37,39 @@ def autocompleteDrug(request):
     return HttpResponse(output, mimetype='text/plain')
 #
 #End of autocomplete
+#
+
+#
+#Check drug interactions method
+#
+def checkInteractions(drug_list):
+
+    if len(drug_list) < 2:
+        return False
+
+    size = len(drug_list)
+    for drug1, drug2 in pairwise(drug_list):
+        nui1 = ndf_api.getNui(drug1)
+        nui2 = ndf_api.getNui(drug2)
+
+        interaction = ndf_api.checkDrugs(nui1, nui2)
+
+        if interaction == None:
+            pass
+        elif interaction == True:
+            return True
+        else:
+            return "Interaction between [%s] & [%s] of %s severity detected." %(drug1, drug2, interaction.upper())
+
+    return False
+
+def pairwise(iterable):
+
+    a, b = itertools.tee(iterable)
+    next(b, None)
+    return itertools.izip(a, b)
+#
+#End of Check drug interactions.
 #
 
 #
@@ -141,7 +175,6 @@ def handlePrescriber(request, prescriber_id):
 
     if request.method == 'POST':
 
-#        if 'update' in request.POST:
         prescriber = get_object_or_404(Prescriber, prescriber_id=prescriber_id)
         form = PrescriberForm(request.POST, instance=prescriber)
         if form.is_valid():
@@ -465,8 +498,6 @@ def dispenseRx(request, p_id):
                     message='[%s] Prescription %s successfully dispensed.' % (strftime("%Y-%m-%d %H:%M:%S"), rx))
 
             else:
-                if form.non_field_errors:
-                    print form.non_field_errors
                 return render_to_response('erx/done.html', {'message': 'Failed', 'errors': form.errors},
             context_instance=RequestContext(request))
 #
@@ -654,7 +685,7 @@ def getDispensedRx(request, p_id):
 #handle prescription: GET using ID, POST, DELETE
 def handlePrescription(request, rx_id):
 
-    ItemFormSet = get_ordereditem_formset(AutoRxEntryForm, extra=2, can_delete=True)
+    ItemFormSet = get_ordereditem_formset(AutoRxEntryForm, extra=0, can_delete=True)
 
     if request.method == 'GET':
         rx = get_object_or_404(Prescription, rx_id=rx_id)
@@ -691,9 +722,32 @@ def handlePrescription(request, rx_id):
                 rxentry = ItemFormSet(request.POST, instance=instance)
 
                 if rxentry.is_valid():
-                    rxentry.save()
-                    return prescriberHome(request, prescription=rx_id,
-                        message='[%s] Prescription %s successfully updated.' %(strftime("%Y-%m-%d %H:%M:%S"), rx))
+                    
+                    drug_list = []
+                    for form in rxentry:
+                        if form.cleaned_data.get('drug_name') is not None:
+                            drug_list.append(form.cleaned_data.get('drug_name'))
+
+                    flag = checkInteractions(drug_list)
+                    if flag == False:
+                        rxentry.save()
+                        return prescriberHome(request, prescription=rx_id,
+                            message='[%s] Prescription %s successfully updated.' %(strftime("%Y-%m-%d %H:%M:%S"), rx))
+
+                    else:
+                        form = PrescriptionForm(request.POST, instance=rx)
+                        formset = ItemFormSet(request.POST, instance=rx)
+                        date_created = rx.created_date
+                        date_modified = rx.last_modified
+                        if flag == True:
+                            message = 'Prescription not saved. Drug interactions have been detected.'  
+                        else:
+                            message = flag
+                        return render_to_response('erx/cur_prescription.html', {'date_created': date_created, 'message': message,
+                                                                                'date_modified': date_modified,
+                                                                                'form': form, 'rxform': formset},
+                            context_instance=RequestContext(request))
+
                 else:
                     form = PrescriptionForm(request.POST, instance=rx)
                     formset = ItemFormSet(request.POST, instance=rx)
