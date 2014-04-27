@@ -21,7 +21,7 @@ class Contact(models.Model):
                                  validators=[RegexValidator(regex='^\d{3}-\d{3}-\d{4}$',
                                              message='Telephone number should be 10 digits xxx-xxx-xxxx',
                                              code='Invalid Telephone')])
-    
+
     email = models.EmailField(max_length=200, unique=True)
 
     class Meta:
