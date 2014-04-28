@@ -56,27 +56,14 @@
                     </div>
                 {% endif %}
 
-            <div class="content">
-                <div class="row">
-                    <div class="login-form">
-                        <h2>Login</h2>
-                        <form action="" method="post">{%csrf_token%}
-                            <fieldset>
-                                <div class="control-group">
-                                    <input type="email" placeholder="Username" name="email">
-                                </div>
+              <form class="form-signin" role="form" action="/erx/login/" method="post">{%csrf_token%}
+                <h2 class="form-signin-heading">Please sign in</h2>
+                <input type="email" name="email" class="form-control" placeholder="Email address" required autofocus><br>
+                <input type="password" name="password" class="form-control" placeholder="Password" required><br>
 
-                                <div class="control-group">
-                                    <input type="password" placeholder="Password" name="password">
-                                </div>
-
-                                <button class="btn btn-success" type="submit">Sign in</button>
-                                <a class="btn btn-info" href="/erx/register">Register</a>
-                            </fieldset>
-                        </form>
-                    </div>
-                </div>
-            </div>
+                <input type="submit" class="btn btn-block btn-primary" value="Sign in"/>
+                <a class="btn btn-info btn-block" href="/erx/register">Register</a>
+              </form>
 
         </div><!--container-->
     </body>

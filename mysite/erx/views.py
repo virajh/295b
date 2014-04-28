@@ -108,7 +108,7 @@ def signIn(request):
                     return pharmacyHome(request, pharmacy_id=myuser.login)
 
             else:
-                message = "User authentication failed."
+                message = "Incorrect username or password."
                 return render_to_response('erx/login.html', {'message': message}, context_instance=RequestContext(request))
 
         else:
