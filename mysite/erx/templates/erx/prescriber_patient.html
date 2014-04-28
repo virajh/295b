@@ -48,6 +48,13 @@
         <div class="container">
              
             <!-------->
+            {% if message %}
+                <div class="alert alert-success alert-block">
+                    <button type="button" class="close" data-dismiss="alert">&times;</button>
+                    <strong>Success! </strong>{{message}}
+                </div>
+            {% endif %}
+
             <div id="content">
                 <ul id="tabs" class="nav nav-tabs" data-tabs="tabs">
                     <li class="active"><a href="#profile" data-toggle="tab">Profile</a></li>
@@ -56,13 +63,6 @@
                     <li><a href="#labh" data-toggle="tab">Lab History</a></li>
                     <li><a href="#contact" data-toggle="tab">Contact Information</a></li>
                 </ul>
-
-                {% if message %}
-                    <div class="alert alert-success alert-block">
-                        <button type="button" class="close" data-dismiss="alert">&times;</button>
-                        <strong>Success! </strong>{{message}}
-                    </div>
-                {% endif %}
 
                 <div id="my-tab-content" class="tab-content">
                     <div class="tab-pane active" id="profile">

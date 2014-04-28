@@ -281,7 +281,9 @@ def prescriberHome(request, **kwargs):
     if 'prescriber_id' in kwargs:
         prescriber = Prescriber.objects.get(prescriber_id=kwargs['prescriber_id'])
     else:
-        prescriber = Prescriber.objects.all()[0]
+        myuser = MyUser.objects.get(user=request.user)
+        prescriber = Prescriber.objects.get(prescriber_id=myuser.login)
+
     my_profile = PrescriberForm(instance=prescriber)
     my_patients = Patient.objects.filter(prescriber=prescriber)
     pending = Prescription.objects.filter(prescriber=prescriber, status="PENDING")
@@ -291,10 +293,10 @@ def prescriberHome(request, **kwargs):
     if 'message' in kwargs:
         message = kwargs['message']
     else:
-        message = 'Welcome %s' % (prescriber)
+        message = ''
 
 
-    return render_to_response('erx/bootstrap3.html', {'prescriber': prescriber, 'my_profile': my_profile, 'message':message,
+    return render_to_response('erx/prescriber_home.html', {'prescriber': prescriber, 'my_profile': my_profile, 'message':message,
                                                            'my_patients': my_patients, 'pending': pending,
                                                            'submitted': submitted, 'dispensed': dispensed},
                               context_instance=RequestContext(request))
@@ -457,7 +459,8 @@ def pharmacyHome(request, **kwargs):
     if 'pharmacy_id' in kwargs:
         pharmacy = Pharmacy.objects.get(pharmacy_id = kwargs['pharmacy_id'])
     else:
-        pharmacy = Pharmacy.objects.all()[0]
+        myuser = MyUser.objects.get(user=request.user)
+        pharmacy = Pharmacy.objects.get(pharmacy_id=myuser.login)
 
     my_profile = PharmacyForm(instance=pharmacy)
     new_p = Prescription.objects.filter(pharmacy=pharmacy, status="SUBMITTED")
@@ -556,7 +559,7 @@ def dispenseRx(request, p_id):
         date_created = rx.created_date
         date_modified = rx.last_modified
 
-        data = {'date_created': date_created, 'date_modified': date_modified,
+        data = {'date_created': date_created, 'date_modified': date_modified, 'prescription': rx,
                 'form': form2,'fields': fields, 'rxform': rxforms, 'rx_id': rx.rx_id}
 
         return render_to_response('erx/dispense_prescription.html', data,
@@ -816,7 +819,7 @@ def handlePrescription(request, rx_id):
         formset = ItemFormSet(instance=rx)
         date_created = rx.created_date
         date_modified = rx.last_modified
-        return render_to_response('erx/cur_prescription.html', {'date_created': date_created,
+        return render_to_response('erx/cur_prescription.html', {'date_created': date_created, 'prescription': rx,
                                                                 'date_modified': date_modified,
                                                                 'form': form, 'rxform': formset},
             context_instance=RequestContext(request))
