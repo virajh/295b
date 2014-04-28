@@ -10,6 +10,7 @@ urlpatterns = patterns('',
 
     url(r'^login/$', views.signIn),
     url(r'^register/$', views.signUp),
+    url(r'^logout/$', views.signOut),
 
     url(r'^prescriber/home/$', views.prescriberHome, name='prescriberHome'),
     url(r'^prescriber/$', views.getAllPrescriber, name='get_all_prescriber'),

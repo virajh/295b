@@ -181,7 +181,7 @@ class Prescription(models.Model):
     status = models.CharField('Status', max_length=20, choices=st_choices, default='PENDING')
 
     def __unicode__(self):
-        return "%s %s: %s "%(self.created_date.date(), self.prescriber, self.patient)
+        return "[%s] %s: %s "%(self.created_date.date(), self.prescriber, self.patient)
 
     def dispense(self):
         self.status = st_choices[2][0]

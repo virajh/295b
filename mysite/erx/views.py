@@ -86,7 +86,8 @@ def pairwise(iterable):
 
 #logout functionality
 def signOut(request):
-    message = 'User %s logged out.'
+
+    message = 'User %s logged out.' % (request.user)
     logout(request)
     return render_to_response('erx/login.html', {'message': message}, context_instance=RequestContext(request))
 
@@ -290,10 +291,10 @@ def prescriberHome(request, **kwargs):
     if 'message' in kwargs:
         message = kwargs['message']
     else:
-        message = ''
+        message = 'Welcome %s' % (prescriber)
 
 
-    return render_to_response('erx/prescriber_home.html', {'prescriber': prescriber, 'my_profile': my_profile, 'message':message,
+    return render_to_response('erx/bootstrap3.html', {'prescriber': prescriber, 'my_profile': my_profile, 'message':message,
                                                            'my_patients': my_patients, 'pending': pending,
                                                            'submitted': submitted, 'dispensed': dispensed},
                               context_instance=RequestContext(request))
