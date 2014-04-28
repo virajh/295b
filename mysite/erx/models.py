@@ -1,8 +1,8 @@
 import time
 
-from django.core.validators import RegexValidator
 from django.db import models
-
+from django.contrib.auth.models import User
+from django.core.validators import RegexValidator
 # Create your models here.
 
 #
@@ -46,6 +46,26 @@ class Person(models.Model):
 #End of Person
 #
 
+#
+#User object for SignUp and SignIn
+#
+type_choice = (
+    ('prescriber', 'prescriber'),
+    ('pharmacy', 'pharmacy'),
+)
+
+class MyUser(models.Model):
+    my_id = models.AutoField(primary_key=True)
+    user = models.OneToOneField(User)
+    utype = models.CharField(max_length=20, choices = type_choice, blank=False)
+    login = models.CharField(max_length=1000, blank=True)
+
+    def setUser(self, user):
+            print "Note: Setting %s to %s." % (self.login, user)
+            self.login = user
+#
+#End of User
+#
 
 #
 #Concrete Prescriber Object

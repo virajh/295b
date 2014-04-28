@@ -4,7 +4,7 @@
         <link href="{{STATIC_URL}}/css/bootstrap/css/bootstrap.css" rel="stylesheet">
         <script type="text/javascript" src="{{STATIC_URL}}/css/bootstrap/js/jquery-1.7.js"></script>
         <script type="text/javascript" src="{{STATIC_URL}}/css/bootstrap/js/bootstrap.js"></script>
-        <title>Login Page</title>
+        <title>Register Page</title>
     </head>
 
     <body>
@@ -49,29 +49,44 @@
 
         <div class="container">
 
-                {% if message %}
+                {% if error %}
                     <div class="alert alert-error">
                         <button type="button" class="close" data-dismiss="alert">&times;</button>
-                        <strong>Error: </strong>{{message}}
+                        <strong>Error: </strong>{{error}}
+                    </div>
+                {% endif %}
+
+                {% if message %}
+                    <div class="alert alert-info">
+                        <button type="button" class="close" data-dismiss="alert">&times;</button>
+                        {{message}}
                     </div>
                 {% endif %}
 
             <div class="content">
                 <div class="row">
                     <div class="login-form">
-                        <h2>Login</h2>
+                        <h2>Register</h2>
                         <form action="" method="post">{%csrf_token%}
                             <fieldset>
                                 <div class="control-group">
-                                    <input type="email" placeholder="Username" name="email">
+                                    <input type="email" placeholder="Email for username" name="email">
                                 </div>
 
                                 <div class="control-group">
                                     <input type="password" placeholder="Password" name="password">
                                 </div>
 
-                                <button class="btn btn-success" type="submit">Sign in</button>
-                                <a class="btn btn-info" href="/erx/register">Register</a>
+                                <div class="control-group">
+                                    <input type="password" placeholder="Confirm Password" name="c_password">
+                                </div>
+
+                                <div class="control-group">
+                                    <input type="radio" name="type" value='prescriber' id='radio1'>Prescriber</input>
+                                    <input type="radio" name="type" value='pharmacy' id='radio2'>Pharmacy</input>
+                                </div>
+
+                                <button class="btn btn-success" type="submit">Submit</button>
                             </fieldset>
                         </form>
                     </div>

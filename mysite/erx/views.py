@@ -8,7 +8,7 @@ from django.contrib.auth.models import User
 from django.forms.models import inlineformset_factory
 from django.forms.formsets import formset_factory
 from django.http import HttpResponse
-from django.shortcuts import render_to_response, get_object_or_404
+from django.shortcuts import render_to_response, get_object_or_404, redirect
 from django.template import RequestContext
 from django.views import generic
 
@@ -16,7 +16,7 @@ from erx.forms import PrescriberForm, PatientForm, PharmacyForm
 from erx.forms import PrescriptionForm, RxEntryForm, LabTestForm, LabHistoryForm, AutoRxEntryForm
 from erx.forms import get_ordereditem_formset
 
-from erx.models import Prescriber, Patient, Pharmacy, Prescription, RxEntry, LabTest, LabHistory, Drug, NDF
+from erx.models import Prescriber, Patient, Pharmacy, Prescription, RxEntry, LabTest, LabHistory, Drug, NDF, MyUser
 
 from erx import ndf_api
 #from erx.models import Rxnconso
@@ -24,7 +24,16 @@ from erx import ndf_api
 #Create your views here.
 
 def testView(request, **kwargs):
-    return render_to_response('erx/done.html', {'NUI': getNUI('SULFINPYRAZONE')},
+    try:
+        print request.POST
+        try:
+            message = request.POST['type']
+        except:
+            message = 'Type missing'
+    except:
+        print request.GET
+        message = 'Welcome'
+    return render_to_response('erx/register.html', {'message': message},
         context_instance=RequestContext(request))
 
 #
@@ -74,43 +83,103 @@ def pairwise(iterable):
 #
 #User authentication 
 #
+
+#logout functionality
+def signOut(request):
+    message = 'User %s logged out.'
+    logout(request)
+    return render_to_response('erx/login.html', {'message': message}, context_instance=RequestContext(request))
+
+
+#login functionality
 def signIn(request):
     if request.method == 'POST':
-        print "POST: signIn"
 
         if request.POST['email'] and request.POST['password']:
             user = authenticate(username=request.POST['email'], password=request.POST['password'])
+
             if user:
                 login(request, user)
-                if 'next' in request.POST:
-                    return redirect(request.POST['next'])
-                else:
-                    return HttpResponse("SUCCESS: Logged in.")
+                myuser = MyUser.objects.get(user=user)
+                if myuser.utype == 'prescriber':
+                    return prescriberHome(request, prescriber_id=myuser.login)
+                elif myuser.utype == 'pharmacy':
+                    return pharmacyHome(request, pharmacy_id=myuser.login)
+
             else:
                 message = "User authentication failed."
                 return render_to_response('erx/login.html', {'message': message}, context_instance=RequestContext(request))
+
         else:
             message = "Missing username or password."
             return render_to_response('erx/login.html', {'message': message}, context_instance=RequestContext(request))
-    else:
-        print "GET: signIn"
 
+    else:
         if 'next' in request.GET:
             data = {'next': request.GET['next']}
         else:
             data = {}
-
         return render_to_response('erx/login.html', data, context_instance=RequestContext(request))
+
+
+#Sign Up functionality
+def signUp(request):
+    if request.method == 'POST':
+
+        if validateSignUpRequest(request.POST):
+            existing = User.objects.filter(username=request.POST['email'])
+            if len(existing) > 0:
+                error = 'User with given email address already exists.'
+                return render_to_response('erx/register.html', {'error': error}, context_instance=RequestContext(request))
+
+            elif len(existing) == 0:
+                user = User.objects.create_user(username=request.POST['email'], email=request.POST['email'],
+                                                password=request.POST['password'])
+                newuser = authenticate(username=request.POST['email'], password=request.POST['password'])
+                if newuser is not None:
+                    myuser = MyUser(user=user, utype=request.POST['type'])
+                    myuser.save()
+                    login(request, newuser)
+                    if myuser.utype == 'prescriber':
+                        return redirect('/erx/prescriber/new/%s/' % (myuser.my_id))
+                    elif myuser.utype =='pharmacy':
+                        return redirect('/erx/pharmacy/new/%s/' % (myuser.my_id))
+                else:
+                    error = 'Authenication of newly created user failed. Please contact administrator'
+                    return render_to_response('erx/register.html', {'error': error}, context_instance=RequestContext(request))
+        else:
+            error = 'Missing values. All fields are required.'
+            return render_to_response('erx/register.html', {'error': error}, context_instance=RequestContext(request))
+
+    elif request.method == 'GET':
+        message = 'Welcome to User Registration'
+        return render_to_response('erx/register.html', {'message': message}, context_instance=RequestContext(request))
+
+
+#checks to see if all the input fields are provided by the user.
+def validateSignUpRequest(data):
+    keys = ['type', 'email', 'password', 'c_password']
+
+    if 'type' not in data.keys():
+        return False
+
+    for key in keys:
+        if len(data[key]) < 1:
+            return False
+
+    if data['password'] != data['c_password']:
+        return False
+
+    return True
+
 #
 #End of User authentication
 #
 
 
-
 #
 #CRUD & Search methods for Prescriber
 #
-
 #prescriber patient view
 def prescriberPatient(request, p_id, **kwargs):
 
@@ -132,21 +201,37 @@ def prescriberPatient(request, p_id, **kwargs):
 
 
 #create new prescriber
-def createPrescriber(request):
+def createPrescriber(request, user_id):
 
     if request.method == 'POST':
         form = PrescriberForm(request.POST)
 
         if form.is_valid():
-            form.save()
-            return render_to_response('erx/done.html', {'message': "Prescriber saved."}, context_instance=RequestContext(request))
+            instance = form.save()
+            myuser = MyUser.objects.get(my_id=user_id)
+            myuser.setUser(instance.prescriber_id)
+            myuser.save()
+            message = 'Profile successfully created for Prescriber %s.' % (instance)
+            return prescriberHome(request, prescriber_id=instance.prescriber_id, message=message)
 
         else:
-            return render_to_response('erx/done.html', {'message': form.errors}, context_instance=RequestContext(request))
+            prescriber = Prescriber()
+            form = PrescriberForm(instance=prescriber)
+            fields = list(form)
+            p_basic, p_contact = fields[:5], fields[5:]
+            return render_to_response('erx/new_prescriber.html', 
+                {'message': form.errors, 'prescriber': 'New Prescriber', 'p_basic': p_basic, 'p_contact': p_contact},
+                context_instance=RequestContext(request))
 
     else:
-       if request.method == "GET":
-           return render_to_response('erx/new_doctor.html', {'form': PrescriberForm, 'formType': 'user'}, context_instance=RequestContext(request))
+        if request.method == "GET":
+            prescriber = Prescriber()
+            form = PrescriberForm(instance=prescriber)
+            fields = list(form)
+            p_basic, p_contact = fields[:5], fields[5:]
+            return render_to_response('erx/new_prescriber.html',
+                    {'prescriber': 'New Prescriber', 'p_basic': p_basic, 'p_contact': p_contact},
+                    context_instance=RequestContext(request))
 
 
 #get all prescribers
@@ -178,7 +263,7 @@ def handlePrescriber(request, prescriber_id):
         form = PrescriberForm(request.POST, instance=prescriber)
         if form.is_valid():
             form.save()
-            return prescriberHome(request, prescriber=prescriber_id,
+            return prescriberHome(request, prescriber_id=prescriber_id,
                 message="[%s] Prescriber %s profile modified successfully." % (strftime("%Y-%m-%d %H:%M:%S"), prescriber))
         else:
             fields = list(form)
@@ -188,20 +273,14 @@ def handlePrescriber(request, prescriber_id):
                  'message': 'Errors: %s ' % (form.errors) },
                 context_instance=RequestContext(request))
 
-#        else:
-#            if 'delete' in request.POST:
-#                try:
-#                    Prescriber.objects.filter(prescriber_id=prescriber_id).delete()
-#                    return render_to_response('erx/done.html', {'message': 'Prescriber %s deleted.' % (prescriber_id)},
-#                        context_instance=RequestContext(request))
-#                except Exception as e:
-#                    return render_to_response('erx/done.html', {'message': e},
-#                        context_instance=RequestContext(request))
 
 #prescriber home
+@login_required(login_url='/erx/login/')
 def prescriberHome(request, **kwargs):
-
-    prescriber = Prescriber.objects.all()[0]
+    if 'prescriber_id' in kwargs:
+        prescriber = Prescriber.objects.get(prescriber_id=kwargs['prescriber_id'])
+    else:
+        prescriber = Prescriber.objects.all()[0]
     my_profile = PrescriberForm(instance=prescriber)
     my_patients = Patient.objects.filter(prescriber=prescriber)
     pending = Prescription.objects.filter(prescriber=prescriber, status="PENDING")
@@ -212,6 +291,7 @@ def prescriberHome(request, **kwargs):
         message = kwargs['message']
     else:
         message = ''
+
 
     return render_to_response('erx/prescriber_home.html', {'prescriber': prescriber, 'my_profile': my_profile, 'message':message,
                                                            'my_patients': my_patients, 'pending': pending,
@@ -336,16 +416,6 @@ def handlePatient(request, patient_id):
                      'message': 'Errors: %s' % (form.errors) },
                 context_instance=RequestContext(request))
 
-        #else:
-        #    if 'delete' in request.POST:
-        #        patient = Patient.objects.get(patient_id=patient_id)
-        #        try:
-        #            Patient.objects.filter(patient_id=patient_id).delete()
-        #            return prescriberHome(request, patient=patient_id, message='%s Patient profile for %s deleted successfully.' % (strftime("%Y-%m-%d %H:%M:%S"), patient))
-        #        except Exception as e:
-        #            return render_to_response('erx/done.html', {'message': e},
-        #                context_instance=RequestContext(request))
-
 
 #get patients by prescriber
 def getPatientByPrescriber(request, p_id):
@@ -373,9 +443,9 @@ def getPatientByPrescriber(request, p_id):
 #
 #Pharmacy CRUD & Search Methods
 #
-  
 
 #pharmacy home
+@login_required(login_url='/erx/login/')
 def pharmacyHome(request, **kwargs):
 
     if 'message' in kwargs:
@@ -383,7 +453,11 @@ def pharmacyHome(request, **kwargs):
     else:
         message = ""
 
-    pharmacy = Pharmacy.objects.all()[0]
+    if 'pharmacy_id' in kwargs:
+        pharmacy = Pharmacy.objects.get(pharmacy_id = kwargs['pharmacy_id'])
+    else:
+        pharmacy = Pharmacy.objects.all()[0]
+
     my_profile = PharmacyForm(instance=pharmacy)
     new_p = Prescription.objects.filter(pharmacy=pharmacy, status="SUBMITTED")
     old_p = Prescription.objects.filter(pharmacy=pharmacy, status="DISPENSED")
@@ -393,17 +467,23 @@ def pharmacyHome(request, **kwargs):
                               context_instance=RequestContext(request))
 
 #Create pharmacy
-def createPharmacy(request):
+def createPharmacy(request, user_id):
 
     if request.method == 'POST':
         form = PharmacyForm(request.POST)
 
         if form.is_valid():
-            form.save()
-            return render_to_response('erx/done.html', {'message': "Pharmacy Saved."}, context_instance=RequestContext(request))
+            instance = form.save()
+            myuser = MyUser.objects.get(my_id=user_id)
+            myuser.setUser(instance.pharmacy_id)
+            myuser.save()
+            message = 'Profile for pharmacy %s created.' % (instance)
+            return pharmacyHome(request, message=message, pharmacy_id=instance.pharmacy_id)
 
         else:
-            return render_to_response('erx/done.html', {'message': form.errors}, context_instance=RequestContext(request))
+            return render_to_response('erx/new_pharmacy.html',
+                {'form': PharmacyForm(request.POST),'message': form.errors},
+                context_instance=RequestContext(request))
 
     else:
        if request.method == "GET":

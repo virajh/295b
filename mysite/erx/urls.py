@@ -9,10 +9,11 @@ urlpatterns = patterns('',
     url(r'^autocomplete-drug/$', views.autocompleteDrug, name='autocomplete_drug'),
 
     url(r'^login/$', views.signIn),
+    url(r'^register/$', views.signUp),
 
     url(r'^prescriber/home/$', views.prescriberHome, name='prescriberHome'),
     url(r'^prescriber/$', views.getAllPrescriber, name='get_all_prescriber'),
-    url(r'^prescriber/new/$', views.createPrescriber, name='new_prescriber'),
+    url(r'^prescriber/new/(?P<user_id>\w+)/$', views.createPrescriber, name='new_prescriber'),
     url(r'^prescriber/(?P<prescriber_id>\w+)/$', views.handlePrescriber, name='handle_prescriber'),
     url(r'^prescriber/select/patient/(?P<p_id>\w+)/$', views.prescriberPatient, name='prescriber_select_patient'),
 
@@ -24,7 +25,7 @@ urlpatterns = patterns('',
 
     url(r'^pharmacy/$', views.getAllPharmacy, name='get_all_pharmacy'),
     url(r'^pharmacy/home/$', views.pharmacyHome, name='pharmacyHome'),
-    url(r'^pharmacy/new/$', views.createPharmacy, name='new_pharmacy'),
+    url(r'^pharmacy/new/(?P<user_id>\w+)/$', views.createPharmacy, name='new_pharmacy'),
     url(r'^pharmacy/dispense/(?P<p_id>\w+)/$', views.dispenseRx, name='dispense_prescription'),
     url(r'^pharmacy/(?P<pharmacy_id>\w+)/$', views.handlePharmacy, name='handle_pharmacy'),
 
