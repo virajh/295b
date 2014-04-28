@@ -43,9 +43,6 @@
               color: #404040;
           }
         </style>
-        <blockquote>
-            <h1>ePrescription-as-a-Service</h1>
-        </blockquote>
 
         <div class="container">
 
@@ -63,35 +60,15 @@
                     </div>
                 {% endif %}
 
-            <div class="content">
-                <div class="row">
-                    <div class="login-form">
-                        <h2>Register</h2>
-                        <form action="" method="post">{%csrf_token%}
-                            <fieldset>
-                                <div class="control-group">
-                                    <input type="email" placeholder="Email for username" name="email">
-                                </div>
-
-                                <div class="control-group">
-                                    <input type="password" placeholder="Password" name="password">
-                                </div>
-
-                                <div class="control-group">
-                                    <input type="password" placeholder="Confirm Password" name="c_password">
-                                </div>
-
-                                <div class="control-group">
-                                    <input type="radio" name="type" value='prescriber' id='radio1'>Prescriber</input>
-                                    <input type="radio" name="type" value='pharmacy' id='radio2'>Pharmacy</input>
-                                </div>
-
-                                <button class="btn btn-success" type="submit">Submit</button>
-                            </fieldset>
-                        </form>
-                    </div>
-                </div>
-            </div>
+            <form class="form-signin" role="form" action="/erx/login/" method="post">{%csrf_token%}
+                <h2 class="form-signin-heading">Please register</h2>
+                <input type="email" name="email" class="form-control" placeholder="Email address" required autofocus><br>
+                <input type="password" name="password" class="form-control" placeholder="Password" required><br>
+                <input type="password" name="c_password" class="form-control" placeholder=" Confirm Password" required><br>
+                <input type="radio" name="type" value='prescriber' id='radio1'>Prescriber</input>
+                <input type="radio" name="type" value='pharmacy' id='radio2'>Pharmacy</input>
+                <br><br><input type="submit" class="btn btn-block btn-primary" value="Register"/>
+            </form>
 
         </div><!--container-->
     </body>
