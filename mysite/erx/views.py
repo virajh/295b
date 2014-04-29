@@ -23,19 +23,6 @@ from erx import ndf_api
 
 #Create your views here.
 
-def testView(request, **kwargs):
-    try:
-        print request.POST
-        try:
-            message = request.POST['type']
-        except:
-            message = 'Type missing'
-    except:
-        print request.GET
-        message = 'Welcome'
-    return render_to_response('erx/register.html', {'message': message},
-        context_instance=RequestContext(request))
-
 #
 #Autocomplete Drug methods
 #

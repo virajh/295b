@@ -4,7 +4,7 @@ from erx import views
 
 urlpatterns = patterns('',
 
-    url(r'^test/$', views.testView, name='testView'),
+#    url(r'^test/$', views.testView, name='testView'),
 
     url(r'^autocomplete-drug/$', views.autocompleteDrug, name='autocomplete_drug'),
 

@@ -84,14 +84,15 @@
                     </div>
                 {% endif %}
 
-            <form class="form-signin" role="form" action="/erx/login/" method="post">{%csrf_token%}
+            <form class="form-signin" role="form" action="/erx/register/" method="post">{%csrf_token%}
                 <h2 class="form-signin-heading">Please register</h2>
                 <input type="email" name="email" class="form-control" placeholder="Email address" required autofocus><br>
                 <input type="password" name="password" class="form-control" placeholder="Password" required><br>
                 <input type="password" name="c_password" class="form-control" placeholder=" Confirm Password" required><br>
                 <input type="radio" name="type" value='prescriber' id='radio1'>Prescriber</input>
                 <input type="radio" name="type" value='pharmacy' id='radio2'>Pharmacy</input>
-                <br><br><input type="submit" class="btn btn-block btn-primary" value="Register"/>
+                <br><br><input type="submit" class="btn btn-primary" value="Register"/>
+                <a class="btn btn-success" href="/erx/login">Already a User?</a>
             </form>
 
         </div><!--container-->
