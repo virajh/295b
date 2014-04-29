@@ -2,12 +2,12 @@
 <html lang="en">
     <head>
         {% load url from future %}
-        <!-- Le styles -->
+        <!-- Le styles 
 
         <link rel="stylesheet" href="{{ STATIC_URL }}css/base/jquery.ui.all.css">
-        <link rel="stylesheet" href="{{ STATIC_URL }}css/base/demos.css">
-        <link href="{{STATIC_URL}}css/bootstrap/css/bootstrap.css" rel="stylesheet">
-
+        <link rel="stylesheet" href="{{ STATIC_URL }}css/base/demos.css">-->
+        <link href="{{STATIC_URL}}css/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+        <link href="{{STATIC_URL}}css/bootstrap/css/dashboard.css" rel="stylesheet">
         <script type="text/javascript" src="{{ STATIC_URL }}css/bootstrap/js/jquery-1.7.js"></script>
         <script type="text/javascript" src="{{ STATIC_URL }}css/bootstrap/js/bootstrap.js"></script>
         <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.ui.core.js"></script>
@@ -107,7 +107,7 @@
         <div class="container">
             <h1><a href="">New Prescription</a></h1>
             {% if message %}
-                <div class="alert alert-error alert-block">
+                <div class="alert alert-danger alert-block">
                     <button type="button" class="close" data-dismiss="alert">&times;</button>
                     <strong>Error: </strong>{{message}}
                 </div>

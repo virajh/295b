@@ -2,9 +2,10 @@
 <html lang="en">
     <head>
         <!-- Le styles -->
-        <link href="{{STATIC_URL}}/css/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-        <script type="text/javascript" src="{{STATIC_URL}}/css/bootstrap/js/jquery-1.7.js"></script>
-        <script type="text/javascript" src="{{STATIC_URL}}/css/bootstrap/js/bootstrap.js"></script>
+        <link href="{{STATIC_URL}}css/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="{{STATIC_URL}}css/bootstrap/css/dashboard.css" rel="stylesheet">
+        <script type="text/javascript" src="{{STATIC_URL}}css/bootstrap/js/jquery-1.7.js"></script>
+        <script type="text/javascript" src="{{STATIC_URL}}css/bootstrap/js/bootstrap.js"></script>
         <script type="text/javascript">
             jQuery(document).ready(function ($) {
                 $('#tabs').tab();
@@ -40,7 +41,7 @@
         <blockquote>
             <h2><a href="">Create Patient</a></h2>
         </blockquote>
-        <div class="container-fluid">
+        <div class="container">
              
             <!-------->
             <div id="content">
@@ -51,7 +52,7 @@
                 </ul><br>
 
                 {% if message %}
-                    <div class="alert alert-error alert-block">
+                    <div class="alert alert-danger alert-block">
                         <button type="button" class="close" data-dismiss="alert">&times;</button>
                         <strong>Error! </strong>{{message}}
                     </div>

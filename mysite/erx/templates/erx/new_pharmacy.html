@@ -2,9 +2,10 @@
 <html lang="en">
     <head>
         <!-- Le styles -->
-        <link href="{{STATIC_URL}}/css/bootstrap/css/bootstrap.css" rel="stylesheet">
-        <script type="text/javascript" src="{{STATIC_URL}}/css/bootstrap/js/jquery-1.7.js"></script>
-        <script type="text/javascript" src="{{STATIC_URL}}/css/bootstrap/js/bootstrap.js"></script>
+        <link href="{{STATIC_URL}}css/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+        <link href="{{STATIC_URL}}css/bootstrap/css/dashboard.css" rel="stylesheet">
+        <script type="text/javascript" src="{{STATIC_URL}}css/bootstrap/js/jquery-1.7.js"></script>
+        <script type="text/javascript" src="{{STATIC_URL}}css/bootstrap/js/bootstrap.js"></script>
         <script type="text/javascript">
             jQuery(document).ready(function ($) {
                 $('#tabs').tab();
@@ -14,19 +15,45 @@
     </head>
  
     <body>
+        <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+          <div class="container-fluid">
+
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              <a class="navbar-brand" href="#">ePrescription-as-a-Service</a>
+            </div>
+
+            <div class="navbar-collapse collapse">
+              <ul class="nav navbar-nav navbar-right">
+                <li><a href="#">Statistics</a></li>
+                <li><a href="#">About</a></li>
+                <li><a href="#">Help</a></li>
+              </ul>
+
+            </div><!--navbar-header-->
+          </div><!--container-fluid-->
+        </div><!--navbar navbar-inverse navbar-fixed-top-->
+
         <blockquote>
-            <h1><a href=".">Pharmacy: {{pharmacy}}</a></h1>
+            <h2><a href=".">Pharmacy: {{pharmacy}}</a></h2>
         </blockquote>
 
         <div class="container">
-            <h2>Pharmacy Profile</h2>
+
+            <h3>Pharmacy Profile</h3>
             <p>Please edit the information below carefully.</p>
             {% if message %}
-                <div class="alert alert-error alert-block">
+                <div class="alert alert-danger alert-block">
                     <button type="button" class="close" data-dismiss="alert">&times;</button>
                     <strong>Failed! </strong>{{message}}
                 </div>
             {% endif %}
+
             <form method="post" action=".">{%csrf_token%}
                 <table class="table table-striped table-condensed">
                     {% for field in form %}
@@ -37,12 +64,12 @@
                     {% endfor %}
                 </table>
                 <input type="submit" class="btn btn-warning" value="Submit" name="update">
-                <a class= "btn btn-info" onClick="history.go(-1);return true;">Cancel</a>
+                <a class= "btn btn-info" href="/erx/pharmacy/home">Cancel</a>
                 <input class="btn" type="reset" value="Restore">
             </form>
 
         </div> <!-- container -->
 <br><hr>
-<p><small>Update Patient page</small></p>
+<p><small>Pharmacy Profile page</small></p>
     </body>
 </html>

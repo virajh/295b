@@ -2,11 +2,17 @@
 <html lang="en">
     <head>
         {% load url from future %}
-        <!-- Le styles -->
+        <!-- Le styles
     	<link rel="stylesheet" href="{{STATIC_URL}}css/base/jquery.ui.all.css">
-    	<link rel="stylesheet" href="{{STATIC_URL}}css/base/demos.css">
-        <link href="{{STATIC_URL}}css/bootstrap/css/bootstrap.css" rel="stylesheet">
-
+    	<link rel="stylesheet" href="{{STATIC_URL}}css/base/demos.css">-->
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="description" content="">
+        <meta name="author" content="">
+        <link rel="shortcut icon" href="../../assets/ico/favicon.ico">
+        <link href="{{STATIC_URL}}css/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+        <link href="{{STATIC_URL}}css/bootstrap/css/dashboard.css" rel="stylesheet">
         <script type="text/javascript" src="{{STATIC_URL}}css/bootstrap/js/jquery-1.7.js"></script>
         <script type="text/javascript" src="{{STATIC_URL}}css/bootstrap/js/bootstrap.js"></script>
         <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.ui.core.js"></script>
@@ -101,74 +107,77 @@
 
             </div><!--navbar-header-->
           </div><!--container-fluid-->
-        </div><!--navbar navbar-inverse navbar-fixed-top--><br><br>
+        </div><!--navbar navbar-inverse navbar-fixed-top-->
 
         <blockquote>
             <h2><a href="">Update Prescription</a></h2>
-            <h3 class="text-center">{{prescription}}</h3>
         </blockquote>
 
+        <h3 class="text-center">{{prescription}}</h3>
+
         <div class="container">
+            <div class="row">
 
-            {% if message %}
-                <div class="alert alert-error alert-block">
-                    <button type="button" class="close" data-dismiss="alert">&times;</button>
-                    <strong>Error: </strong>{{message}}
-                </div>
-            {% endif %}
+                    {% if message %}
+                        <div class="alert alert-danger alert-block">
+                            <button type="button" class="close" data-dismiss="alert">&times;</button>
+                            <strong>Error: </strong>{{message}}
+                        </div>
+                    {% endif %}
 
-            <h4>Prescription Information</h4>
-            <form class="form form-inline" method="post" action=".">{%csrf_token%}
-                <div class="well well-small">
-                    {{form.as_p}}
-                    <p>Date Created: {{ date_created }}</p>
-                    <p>Last Modified: {{ date_modified }}</p>
+                    <h4>Prescription Information</h4>
+                    <form class="form form-inline" method="post" action=".">{%csrf_token%}
+                        <div class="well well-small">
+                            {{form.as_p}}
+                            <p>Date Created: {{ date_created }}</p>
+                            <p>Last Modified: {{ date_modified }}</p>
 
-                    <p class="alert-info">PIN: <input type="password" name="pin"></p>
-                </div>
+                            <p class="alert-info">PIN: <input type="password" name="pin"></p>
+                        </div>
 
-                <h4>Drugs</h4>
-                <table class="table table-condensed table-bordered table-hover" id="id_drugs_table">
-                    <thead>
-                        <tr>
-                            <th scope="col">Drug & Concentration</th>
-                            <th scope="col">Form</th>
-                            <th scope="col">Schedule</th>
-                            <th scope="col">Quantity</th>
-                            <th scope="col">Substitute</th>
-                            <th scope="col">Refills</th>
-                        </tr>
-                    </thead>
+                        <h4>Drugs</h4>
+                        <table class="table table-condensed table-bordered table-hover" id="id_drugs_table">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Drug & Concentration</th>
+                                    <th scope="col">Form</th>
+                                    <th scope="col">Schedule</th>
+                                    <th scope="col">Quantity</th>
+                                    <th scope="col">Substitute</th>
+                                    <th scope="col">Refills</th>
+                                </tr>
+                            </thead>
 
-                    <tbody>
-                        {% for form in rxform.forms %}
-                            <tr id="{{ form.prefix }}-row">
-                                <td>
-                                    {% for fld in form.hidden_fields %}{{ fld }}{% endfor %}
-                                    {% if form.instance.pk %}{{ form.DELETE }}{% endif %}
-                                    {{ form.drug_name }}
-                                </td>
-                                <td>
-                                    <div class="ui-widget">
-                                        {{ form.drug_form }}
-                                    </div>
-                                </td>
-                                <td>{{ form.drug_schedule }}</td>
-                                <td>{{ form.drug_quantity }}</td>
-                                <td>{{ form.drug_substitution }}</td>
-                                <td>{{ form.refills }}</td>
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            {{ rxform.management_form }}
+                            <tbody>
+                                {% for form in rxform.forms %}
+                                    <tr id="{{ form.prefix }}-row">
+                                        <td>
+                                            {% for fld in form.hidden_fields %}{{ fld }}{% endfor %}
+                                            {% if form.instance.pk %}{{ form.DELETE }}{% endif %}
+                                            {{ form.drug_name }}
+                                        </td>
+                                        <td>
+                                            <div class="ui-widget">
+                                                {{ form.drug_form }}
+                                            </div>
+                                        </td>
+                                        <td>{{ form.drug_schedule }}</td>
+                                        <td>{{ form.drug_quantity }}</td>
+                                        <td>{{ form.drug_substitution }}</td>
+                                        <td>{{ form.refills }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                        {{ rxform.management_form }}
 
-            <input type="submit" class="btn btn-warning" value="Update" name="update">
-            <a class="btn btn-info"  href="/erx/prescriber/home">Cancel</a>
-            <input type="reset" class="btn btn-info"  value="Reset">
-            <input type="submit" class="btn btn-danger" value="Delete" name="delete">
-        </form>
+                        <input type="submit" class="btn btn-warning" value="Update" name="update">
+                        <a class="btn btn-info"  href="/erx/prescriber/home">Cancel</a>
+                        <input type="reset" class="btn btn-info"  value="Reset">
+                        <input type="submit" class="btn btn-danger" value="Delete" name="delete">
+                    </form>
 
+            </div><!--row-->
         </div> <!-- container -->
         <br><hr>
         <p><small>Update Prescription page</small></p>
