@@ -460,8 +460,8 @@ def pharmacyHome(request, **kwargs):
         pharmacy = Pharmacy.objects.get(pharmacy_id = kwargs['pharmacy_id'])
     else:
         myuser = MyUser.objects.get(user=request.user)
-#        pharmacy = Pharmacy.objects.get(pharmacy_id=myuser.login)
-        pharmacy = Pharmacy.objects.all()[0]
+        pharmacy = Pharmacy.objects.get(pharmacy_id=myuser.login)
+#        pharmacy = Pharmacy.objects.all()[0]
 
     my_profile = PharmacyForm(instance=pharmacy)
     new_p = Prescription.objects.filter(pharmacy=pharmacy, status="SUBMITTED")
