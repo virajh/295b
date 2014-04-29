@@ -798,7 +798,7 @@ def getDispensedRx(request, p_id):
 #handle prescription: GET using ID, POST, DELETE
 def handlePrescription(request, rx_id):
 
-    ItemFormSet = get_ordereditem_formset(AutoRxEntryForm, extra=0, can_delete=True)
+    ItemFormSet = get_ordereditem_formset(AutoRxEntryForm, extra=1, can_delete=True)
 
     if request.method == 'GET':
         rx = get_object_or_404(Prescription, rx_id=rx_id)
