@@ -226,7 +226,7 @@ class RxEntry(models.Model):
     prescription = models.ForeignKey(Prescription)
 
     def __unicode__(self):
-        return "%s\n%s\n%s\n" % (self.drug_name, self.drug_schedule, self.drug_quantity)
+        return "%s %s %s" % (self.drug_name, self.drug_form, self.drug_schedule)
 
 #
 #End of RxEntry
