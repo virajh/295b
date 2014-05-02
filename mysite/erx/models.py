@@ -30,7 +30,6 @@ class Contact(models.Model):
 #End of Contact
 #
 
-
 #
 #Abstract Person Object
 #

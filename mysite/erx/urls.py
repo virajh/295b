@@ -7,6 +7,7 @@ urlpatterns = patterns('',
 #    url(r'^test/$', views.testView, name='testView'),
 
     url(r'^autocomplete-drug/$', views.autocompleteDrug, name='autocomplete_drug'),
+
     url(r'^$', views.signIn),
     url(r'^login/$', views.signIn),
     url(r'^register/$', views.signUp),
