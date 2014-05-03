@@ -622,6 +622,7 @@ def createPrescriptionForPatient(request, p_id):
                         message = 'Prescription not saved. Drug interactions have been detected.'  
                     else:
                         message = flag
+                    Prescription.objects.filter(rx_id=instance.rx_id).delete()
                     patient = Patient.objects.get(patient_id = p_id)
                     prescription = Prescription(patient=patient, prescriber=patient.prescriber)
                     form = PrescriptionForm(request.POST, instance=prescription)
@@ -696,6 +697,7 @@ def createPrescriptionForPrescriber(request, p_id):
                         message = 'Prescription not saved. Drug interactions have been detected.'
                     else:
                         message = flag
+                    Prescription.objects.filter(rx_id=instance.rx_id).delete()
                     prescriber = Prescriber.objects.get(prescriber_id = p_id)
                     prescription = Prescription(prescriber=prescriber)
                     form = PrescriptionForm(request.POST, instance=prescription)
@@ -848,6 +850,7 @@ def handlePrescription(request, rx_id):
                             message='[%s] Prescription %s successfully updated.' %(strftime("%Y-%m-%d %H:%M:%S"), rx))
 
                     else:
+                        Prescription.objects.filter(rx_id=instance.rx_id).delete()
                         form = PrescriptionForm(request.POST, instance=rx)
                         formset = ItemFormSet(request.POST, instance=rx)
                         date_created = rx.created_date
