@@ -124,9 +124,9 @@ class Patient(Person, Contact):
 
     def __unicode__(self):
         if self.middle_name:
-            return self.first_name+" "+self.middle_name+" "+self.last_name+" (" + self.medical_id + ")"
+            return self.first_name+" "+self.middle_name+" "+self.last_name+" <" + self.medical_id + ">"
         else:
-            return self.first_name+" "+self.last_name+" ("+self.medical_id+ ")"
+            return self.first_name+" "+self.last_name+" <"+self.medical_id+ ">"
 #
 #End of Patient
 #

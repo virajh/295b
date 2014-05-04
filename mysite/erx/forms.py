@@ -25,6 +25,20 @@ class PatientForm(ModelForm):
                   'height', 'street_address', 'city', 'state', 'zipcode', 'telephone', 'email',
                   'em_contact_name', 'em_contact_phone']
 
+#Patient form 2
+class PatientForm2(ModelForm):
+
+    def __init__(self, prescriber=None, *args, **kwargs):
+        super(PatientForm2, self).__init__(*args, **kwargs)
+        if prescriber is not None:
+            self.fields['prescriber'].queryset = Prescriber.objects.filter(prescriber_id = prescriber.prescriber_id)
+
+    class Meta:
+        model = Patient
+        fields = ['prescriber', 'medical_id', 'first_name', 'middle_name', 'last_name', 'gender',
+                  'birth_date', 'food_allergy', 'current_medications', 'current_ailments', 'weight',
+                  'height', 'street_address', 'city', 'state', 'zipcode', 'telephone', 'email',
+                  'em_contact_name', 'em_contact_phone']
 
 #Pharmacy form
 class PharmacyForm(ModelForm):
@@ -37,6 +51,24 @@ class PharmacyForm(ModelForm):
 class PrescriptionForm(ModelForm):
     class Meta:
         model = Prescription
+
+
+#Prescription form 2
+class PrescriptionForm2(ModelForm):
+
+    def __init__(self, prescriber=None, patient=None, *args, **kwargs):
+        super(PrescriptionForm2, self).__init__(*args, **kwargs)
+
+        if prescriber is not None:
+            self.fields['patient'].queryset = Patient.objects.filter(prescriber=prescriber)
+            self.fields['prescriber'].queryset = Prescriber.objects.filter(prescriber_id=prescriber.prescriber_id)
+
+        if patient is not None:
+            self.fields['patient'].queryset = Patient.objects.filter(patient_id=patient.patient_id)
+
+    class Meta:
+        model = Prescription
+
 
 
 #RxEntry form
