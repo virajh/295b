@@ -1,0 +1,2 @@
+{ "_id" : { "$oid" : "533893f4fa94836ed3f3c192" }, "city" : "San Jose", "zipcode" : "91053", "telephone" : "123-123-1233", "state" : "CA", "pharmacy_name" : "CVS Pharmacy", "license_id" : "123-23-1231", "email" : "cvs@cvs.com", "street_address" : "N King Street" }
+{ "_id" : { "$oid" : "534f1ca0fa94834a3e15dac7" }, "city" : "San Jose", "zipcode" : "95124", "telephone" : "100-100-1001", "state" : "CA", "pharmacy_name" : "Walgreens", "license_id" : "123-00-1235", "email" : "rx@walgreens.com", "street_address" : "121, E 8th St" }
