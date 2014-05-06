@@ -642,7 +642,7 @@ def createPrescriptionForPatient(request, p_id):
 
         else:
             errors = form.errors
-            form = PrescriptionForm(request.POST, patient=patient, prescriber=patient.prescriber)
+            form = PrescriptionForm2(request.POST, patient=patient, prescriber=patient.prescriber)
             formset = ItemFormSet(request.POST)
             message = '%s' %(errors)
             return render_to_response('erx/new_prescription.html', {'message': message,'form': form, 'rxform': formset},
